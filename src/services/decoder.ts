@@ -11,7 +11,8 @@ export interface DecodedItem {
     matchedPhoto: string | null;
 }
 
-export type Queue = Record<number, [criminalID: number, attachmentID: number, item: string][]>;
+type QueueItem = [criminalID: number, attachmentID: number, item: string];
+export type Queue = Record<number, QueueItem[]>;
 
 export default class DecoderService {
     public static decode(items: Readonly<string[]>): Promise<Record<string, DecodedItem>> {
@@ -41,23 +42,12 @@ export default class DecoderService {
         }, queue);
     }
 
-    protected static async decodeMyrotvorets(
-        items: [number, number, string][] = [],
-    ): Promise<Record<string, DecodedItem>> {
+    protected static async decodeMyrotvorets(items: QueueItem[] = []): Promise<Record<string, DecodedItem>> {
         if (!items.length) {
             return {};
         }
 
-        const cids = new Set<number>();
-        const aids = new Set<number>();
-        for (const [criminalID, attachmentID] of items) {
-            cids.add(criminalID);
-            aids.add(attachmentID);
-        }
-
-        const criminalIDs = Array.from(cids);
-        const attachmentIDs = Array.from(aids);
-
+        const [criminalIDs, attachmentIDs] = DecoderService.getUniqueIDs(items);
         const [criminals, attachments, primaryPhotos] = await Model.transaction((trx) =>
             Promise.all([
                 DecoderService.getCriminals(trx, criminalIDs),
@@ -72,19 +62,28 @@ export default class DecoderService {
             const primaryPhoto: CriminalAttachment | undefined = primaryPhotos[criminalID];
             const attachment: CriminalAttachment | undefined = attachments[attachmentID];
             if (criminal) {
-                const entry: DecodedItem = {
+                result[key] = {
                     name: criminal.name,
                     country: criminal.country,
                     link: criminal.link,
                     primaryPhoto: primaryPhoto ? primaryPhoto.link : null,
                     matchedPhoto: attachment && attachment.id === criminalID ? attachment.link : null,
                 };
-
-                result[key] = entry;
             }
         }
 
         return result;
+    }
+
+    private static getUniqueIDs(items: QueueItem[]): [number[], number[]] {
+        const criminalIDs = new Set<number>();
+        const attachmentIDs = new Set<number>();
+        for (const [criminalID, attachmentID] of items) {
+            criminalIDs.add(criminalID);
+            attachmentIDs.add(attachmentID);
+        }
+
+        return [Array.from(criminalIDs), Array.from(attachmentIDs)];
     }
 
     private static async getCriminals(trx: Transaction, criminalIDs: number[]): Promise<Record<number, Criminal>> {
