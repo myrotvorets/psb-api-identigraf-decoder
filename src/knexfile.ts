@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 
 import type { Config } from 'knex';
+import { join } from 'path';
 import { cleanEnv, num, str } from 'envalid';
 
 interface DbEnv {
@@ -35,7 +36,7 @@ export function buildKnexConfig(environment: NodeJS.Dict<string> = process.env):
 
     return {
         client: 'mysql2',
-        asyncStackTraces: env.NODE_ENV === 'development',
+        asyncStackTraces: ['development', 'test'].includes(env.NODE_ENV),
         connection: {
             database: env.MYSQL_DATABASE,
             host: env.MYSQL_HOST,
@@ -50,6 +51,10 @@ export function buildKnexConfig(environment: NodeJS.Dict<string> = process.env):
         },
         migrations: {
             tableName: 'knex_migrations_identigraf_decoder',
+            directory: join(__dirname, '..', 'test', 'migrations'),
+        },
+        seeds: {
+            directory: join(__dirname, '..', 'test', 'seeds'),
         },
     };
 }

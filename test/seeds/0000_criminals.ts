@@ -57,6 +57,10 @@ const seedData = [
 ];
 
 export async function seed(knex: Knex): Promise<void> {
+    if (!['test', 'development'].includes(process.env.NODE_ENV || '')) {
+        throw new Error(`Refusing to run this in ${process.env.NODE_ENV} environment`);
+    }
+
     await knex('criminals').del();
     await knex('criminals').insert(seedData);
 }

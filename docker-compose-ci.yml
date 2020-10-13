@@ -1,0 +1,41 @@
+version: '3.0'
+
+services:
+  decoder:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile-ci
+      args:
+        GPR_AUTH_TOKEN: $GPR_AUTH_TOKEN
+    environment:
+      NODE_ENV: test
+      MYSQL_DATABASE: test
+      MYSQL_HOST: mysql
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      RUN_INTEGRATION_TESTS: "true"
+    depends_on:
+      - mysql
+    volumes:
+      - './test:/srv/service/test:ro'
+      - './.eslintignore:/srv/service/.eslintignore:ro'
+      - './.eslintrc.json:/srv/service/.eslintrc.json:ro'
+      - './.prettierignore:/srv/service/.prettierignore:ro'
+      - './.prettierrc.json:/srv/service/.prettierrc.json:ro'
+      - './jest.config.js:/srv/service/jest.config.js:ro'
+      - './test-report.xml:/srv/service/test-report.xml'
+      - './coverage:/srv/service/coverage'
+
+  mysql:
+    image: mariadb:latest
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_INITDB_SKIP_TZINFO: "1"
+    volumes:
+      - mysql_data
+
+volumes:
+  mysql_data:

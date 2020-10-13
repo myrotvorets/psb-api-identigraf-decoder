@@ -1,0 +1,10 @@
+FROM myrotvorets/node:latest AS base
+ARG GPR_AUTH_TOKEN
+USER root
+WORKDIR /srv/service
+RUN chown nobody:nogroup /srv/service
+USER nobody:nogroup
+COPY --chown=nobody:nogroup ./package.json ./package-lock.json ./tsconfig.json .npmrc ./
+RUN echo "//npm.pkg.github.com/:_authToken=$GPR_AUTH_TOKEN" >> .npmrc && npm ci && rm -f .npmrc
+COPY --chown=nobody:nogroup ./ ./
+ENTRYPOINT ["/usr/bin/npm", "run", "ci"]

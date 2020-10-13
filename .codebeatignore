@@ -1,2 +1,2 @@
-src/migrations/**
-src/seeds/**
+test/migrations/**
+test/seeds/**

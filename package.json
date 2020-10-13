@@ -11,7 +11,9 @@
     "lint:fix": "eslint --fix .",
     "pretest": "npm run lint",
     "test": "NODE_ENV=test jest",
-    "posttest": "npm run build"
+    "posttest": "npm run build",
+    "preci": "npm run wait-for-mysql && ts-node ./test/migrate.ts",
+    "ci": "npm run test"
   },
   "author": "Myrotvorets <support@myrotvorets.center> (https://myrotvorets.center/)",
   "license": "MIT",
