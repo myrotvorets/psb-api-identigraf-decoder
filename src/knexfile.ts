@@ -35,7 +35,7 @@ export function buildKnexConfig(environment: NodeJS.Dict<string> = process.env):
     const env = getEnvironment(environment);
 
     return {
-        client: 'mysql2',
+        client: 'mysql',
         asyncStackTraces: ['development', 'test'].includes(env.NODE_ENV),
         connection: {
             database: env.MYSQL_DATABASE,
