@@ -26,17 +26,20 @@ jobs:
           node-version: ${{ matrix.node_version }}
           registry-url: https://npm.pkg.github.com
 
-      - name: Install dependencies and test
-        run: npm cit
+      - name: Install dependencies
+        run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Run tests
+        run: ./ci.sh
 
       - name: Retrieve information from package.json
         uses: myrotvorets/info-from-package-json-action@1.0.0
         id: ver
 
       - name: Fix paths in test-report.xml
-        run: sed -i "s@$(pwd)@/github/workspace@g" test-report.xml
+        run: sed -i "s@/srv/service@/github/workspace@g" test-report.xml
         if: ${{ matrix.node_version == '12' }}
 
       - name: SonarCloud Scan
