@@ -5,7 +5,16 @@ import { NodeTracerProvider } from '@opentelemetry/node';
 import { SimpleSpanProcessor } from '@opentelemetry/tracing';
 import { ZipkinExporter } from '@opentelemetry/exporter-zipkin';
 
-const provider = new NodeTracerProvider();
+const provider = new NodeTracerProvider({
+    plugins: {
+        express: {
+            ignoreUrls: [/\/monitoring\//u],
+        },
+        http: {},
+        https: {},
+        mysql: {},
+    },
+});
 
 if (+(process.env.ENABLE_TRACING ?? 0) && process.env.ZIPKIN_ENDPOINT) {
     const zipkinExporter = new ZipkinExporter({
