@@ -7,12 +7,12 @@ import { ZipkinExporter } from '@opentelemetry/exporter-zipkin';
 
 const provider = new NodeTracerProvider({
     plugins: {
-        express: {
-            ignoreUrls: [/\/monitoring\//u],
-        },
+        express: {},
         http: {},
         https: {},
-        mysql: {},
+        knex: {
+            path: '@myrotvorets/opentelemetry-plugin-knex',
+        },
     },
 });
 
