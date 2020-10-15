@@ -2,8 +2,9 @@
 
 import opentelemetry from '@opentelemetry/api';
 import { NodeTracerProvider } from '@opentelemetry/node';
-import { SimpleSpanProcessor } from '@opentelemetry/tracing';
+import { BatchSpanProcessor } from '@opentelemetry/tracing';
 import { ZipkinExporter } from '@opentelemetry/exporter-zipkin';
+import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks';
 
 const provider = new NodeTracerProvider({
     plugins: {
@@ -16,13 +17,16 @@ const provider = new NodeTracerProvider({
     },
 });
 
+const contextManager = new AsyncHooksContextManager().enable();
+opentelemetry.context.setGlobalContextManager(contextManager);
+
 if (+(process.env.ENABLE_TRACING ?? 0) && process.env.ZIPKIN_ENDPOINT) {
     const zipkinExporter = new ZipkinExporter({
         url: process.env.ZIPKIN_ENDPOINT,
         serviceName: 'psb-api-identigraf-decoder',
     });
 
-    const zipkinProcessor = new SimpleSpanProcessor(zipkinExporter);
+    const zipkinProcessor = new BatchSpanProcessor(zipkinExporter);
     provider.addSpanProcessor(zipkinProcessor);
 }
 
