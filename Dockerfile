@@ -14,9 +14,12 @@ RUN \
         eslint @myrotvorets/eslint-config-myrotvorets-ts @typescript-eslint/eslint-plugin eslint-plugin-import eslint-plugin-prettier prettier eslint-plugin-sonarjs \
         @types/jest jest ts-jest merge supertest @types/supertest mock-knex @types/mock-knex jest-sonar-reporter \
         nodemon && \
-    npm ci
+    npm ci --ignore-scripts && \
+    rm -f .npmrc && \
+    npm rebuild && \
+    npm run prepare --if-present
 COPY --chown=nobody:nogroup ./src ./src
-RUN npm run build
+RUN npm run build -- --declaration false
 
 FROM myrotvorets/node-current-min
 USER root
