@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-import opentelemetry from '@opentelemetry/api';
 import { NodeTracerProvider } from '@opentelemetry/node';
 import { SimpleSpanProcessor } from '@opentelemetry/tracing';
 import { ZipkinExporter } from '@opentelemetry/exporter-zipkin';
@@ -27,5 +26,3 @@ if (+(process.env.ENABLE_TRACING ?? 0) && process.env.ZIPKIN_ENDPOINT) {
 }
 
 provider.register();
-
-export const tracer = opentelemetry.trace.getTracer('identigraf-decoder');
