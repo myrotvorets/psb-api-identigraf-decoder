@@ -7,3 +7,4 @@
 !healthcheck.sh
 
 src/**/.git
+*.d.ts
