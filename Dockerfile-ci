@@ -5,6 +5,10 @@ WORKDIR /srv/service
 RUN chown nobody:nogroup /srv/service
 USER nobody:nogroup
 COPY --chown=nobody:nogroup ./package.json ./package-lock.json ./tsconfig.json .npmrc ./
-RUN echo "//npm.pkg.github.com/:_authToken=$GPR_AUTH_TOKEN" >> .npmrc && npm ci && rm -f .npmrc
+RUN \
+    NODE_AUTH_TOKEN=$GPR_AUTH_TOKEN echo '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' >> .npmrc && \
+    npm ci --ignore-scripts && \
+    npm rebuild && \
+    npm run prepare --if-present
 COPY --chown=nobody:nogroup ./ ./
 ENTRYPOINT ["/usr/bin/npm", "run", "ci"]
