@@ -6,7 +6,7 @@
         "outDir": "./dist",
         "rootDirs": ["./src", "./test"],
         "sourceMap": false,
-        "declaration": true,
+        "declaration": false,
         "removeComments": true,
         "strict": true,
         "noUnusedLocals": true,
