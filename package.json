@@ -59,7 +59,7 @@
     "mock-knex": "^0.4.9",
     "nodemon": "^2.0.5",
     "prettier": "^2.1.2",
-    "supertest": "^5.0.0",
+    "supertest": "^6.0.0",
     "ts-jest": "^26.4.3",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5",
