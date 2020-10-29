@@ -7,7 +7,7 @@ import {
     ShutdownCheck,
 } from '@cloudnative/health-connect';
 import { addJsonContentTypeMiddleware } from '@myrotvorets/express-microservice-middlewares';
-import { NextFunction, Request, Response, Router } from 'express';
+import { Router } from 'express';
 import knex, { Client } from 'knex';
 
 export let healthChecker = new HealthChecker();
