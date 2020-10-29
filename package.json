@@ -21,7 +21,7 @@
     "@cloudnative/health-connect": "^2.1.0",
     "@myrotvorets/create-server": "^1.0.2",
     "@myrotvorets/envalidators": "^1.3.0",
-    "@myrotvorets/express-microservice-middlewares": "^1.3.0",
+    "@myrotvorets/express-microservice-middlewares": "^1.4.1",
     "@myrotvorets/oav-installer": "^2.2.1",
     "@myrotvorets/opentelemetry-plugin-knex": "^0.2.2",
     "@opentelemetry/exporter-zipkin": "^0.12.0",

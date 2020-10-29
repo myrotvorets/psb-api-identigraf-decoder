@@ -6,13 +6,9 @@ import {
     ReadinessEndpoint,
     ShutdownCheck,
 } from '@cloudnative/health-connect';
+import { addJsonContentTypeMiddleware } from '@myrotvorets/express-microservice-middlewares';
 import { NextFunction, Request, Response, Router } from 'express';
 import knex, { Client } from 'knex';
-
-const sendJsonContentType = (req: Request, res: Response, next: NextFunction): void => {
-    res.set('Content-Type', 'application/json');
-    next();
-};
 
 export let healthChecker = new HealthChecker();
 
@@ -34,7 +30,7 @@ export default function (db: knex): Router {
     healthChecker.registerReadinessCheck(dbCheck);
     healthChecker.registerShutdownCheck(shutdownCheck);
 
-    router.use(sendJsonContentType);
+    router.use(addJsonContentTypeMiddleware);
     router.get('/live', LivenessEndpoint(healthChecker));
     router.get('/ready', ReadinessEndpoint(healthChecker));
     router.get('/health', HealthEndpoint(healthChecker));

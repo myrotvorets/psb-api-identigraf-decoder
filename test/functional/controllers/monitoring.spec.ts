@@ -19,7 +19,7 @@ function buildApp(): express.Express {
 
 afterEach(() => {
     process.removeAllListeners('SIGTERM');
-    mockKnex.getTracker().uninstall()
+    mockKnex.getTracker().uninstall();
 });
 
 beforeEach(() => {
