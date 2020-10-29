@@ -6,10 +6,15 @@ import {
     ReadinessEndpoint,
     ShutdownCheck,
 } from '@cloudnative/health-connect';
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import knex, { Client } from 'knex';
 
-export const healthChecker = new HealthChecker();
+const sendJsonContentType = (req: Request, res: Response, next: NextFunction): void => {
+    res.set('Content-Type', 'application/json');
+    next();
+};
+
+export let healthChecker = new HealthChecker();
 
 export default function (db: knex): Router {
     const router = Router();
@@ -25,9 +30,11 @@ export default function (db: knex): Router {
 
     const shutdownCheck = new ShutdownCheck('SIGTERM', (): Promise<void> => Promise.resolve());
 
+    healthChecker = new HealthChecker();
     healthChecker.registerReadinessCheck(dbCheck);
     healthChecker.registerShutdownCheck(shutdownCheck);
 
+    router.use(sendJsonContentType);
     router.get('/live', LivenessEndpoint(healthChecker));
     router.get('/ready', ReadinessEndpoint(healthChecker));
     router.get('/health', HealthEndpoint(healthChecker));

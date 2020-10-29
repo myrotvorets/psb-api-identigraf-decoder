@@ -3,40 +3,33 @@ import request from 'supertest';
 import knex from 'knex';
 import mockKnex from 'mock-knex';
 import { buildKnexConfig } from '../../../src/knexfile';
-import { configureApp } from '../../../src/server';
 import monitoringController, { healthChecker } from '../../../src/controllers/monitoring';
 
 let app: express.Express;
 
-async function buildApp(): Promise<express.Express> {
+function buildApp(): express.Express {
     const application = express();
+    application.disable('x-powered-by');
     const db = knex(buildKnexConfig({ MYSQL_DATABASE: 'fake' }));
     mockKnex.mock(db);
     afterAll(() => mockKnex.unmock(db));
     application.use('/monitoring', monitoringController(db));
-    await configureApp(application);
     return application;
 }
 
 afterEach(() => mockKnex.getTracker().uninstall());
-
-beforeEach((done) => {
-    buildApp()
-        .then((application) => {
-            app = application;
-            healthChecker.shutdownRequested = false;
-            done();
-        })
-        .catch((e: Error) => {
-            done.fail(e);
-        });
+beforeEach(() => {
+    app = buildApp();
+    healthChecker.shutdownRequested = false;
 });
 
 describe('MonitoringController', () => {
-    const checker200 = (endpoint: string): Promise<unknown> => request(app).get(`/monitoring/${endpoint}`).expect(200);
+    const checker200 = (endpoint: string): Promise<unknown> =>
+        request(app).get(`/monitoring/${endpoint}`).expect('Content-Type', /json/u).expect(200);
+
     const checker503 = (endpoint: string): Promise<unknown> => {
         healthChecker.shutdownRequested = true;
-        return request(app).get(`/monitoring/${endpoint}`).expect(503);
+        return request(app).get(`/monitoring/${endpoint}`).expect('Content-Type', /json/u).expect(503);
     };
 
     describe('Liveness Check', () => {
