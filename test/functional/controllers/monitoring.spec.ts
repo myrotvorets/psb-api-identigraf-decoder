@@ -17,7 +17,11 @@ function buildApp(): express.Express {
     return application;
 }
 
-afterEach(() => mockKnex.getTracker().uninstall());
+afterEach(() => {
+    process.removeAllListeners('SIGTERM');
+    mockKnex.getTracker().uninstall()
+});
+
 beforeEach(() => {
     app = buildApp();
     healthChecker.shutdownRequested = false;
