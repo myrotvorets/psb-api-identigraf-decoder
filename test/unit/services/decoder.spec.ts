@@ -69,7 +69,9 @@ describe('DecoderService', () => {
             tracker.on('query', (query, step) => {
                 expect(step).toBeLessThanOrEqual(5);
                 if (step > 1 && step < 5) {
+                    // eslint-disable-next-line jest/no-conditional-expect
                     expect(query.method).toEqual('select');
+                    // eslint-disable-next-line jest/no-conditional-expect
                     expect(query.transacting).toBe(true);
                 }
 

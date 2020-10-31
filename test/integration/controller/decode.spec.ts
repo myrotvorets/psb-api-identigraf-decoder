@@ -18,6 +18,7 @@ async function buildApp(): Promise<express.Express> {
 }
 
 if (!process.env.RUN_INTEGRATION_TESTS) {
+    // eslint-disable-next-line jest/no-focused-tests
     test.only('Skipping integration tests', () => {
         /* Skipping integration tests because RUN_INTEGRATION_TESTS is not set */
     });
@@ -27,35 +28,14 @@ if (!process.env.RUN_INTEGRATION_TESTS) {
         Model.knex(db);
     });
 
-    beforeEach((done) => {
+    afterAll(() => db.destroy());
+
+    beforeEach(() =>
         db.seed
             .run()
-            .then(() => {
-                done();
-            })
-            .catch((e) => {
-                done.fail(e);
-            });
-    });
-
-    afterAll((done) => {
-        db.destroy()
-            .then(done)
-            .catch((e) => {
-                done.fail(e);
-            });
-    });
-
-    beforeEach((done) => {
-        buildApp()
-            .then((application) => {
-                app = application;
-                done();
-            })
-            .catch((e: Error) => {
-                done.fail(e);
-            });
-    });
+            .then(() => buildApp())
+            .then((application) => (app = application)),
+    );
 }
 
 describe('DecodeController', () => {

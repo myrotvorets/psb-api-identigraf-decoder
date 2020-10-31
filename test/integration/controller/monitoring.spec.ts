@@ -16,6 +16,7 @@ async function buildApp(): Promise<express.Express> {
 }
 
 if (!process.env.RUN_INTEGRATION_TESTS) {
+    // eslint-disable-next-line jest/no-focused-tests
     test.only('Skipping integration tests', () => {
         /* Skipping integration tests because RUN_INTEGRATION_TESTS is not set */
     });
@@ -24,24 +25,9 @@ if (!process.env.RUN_INTEGRATION_TESTS) {
         db = knex(buildKnexConfig());
     });
 
-    afterAll((done) => {
-        db.destroy()
-            .then(done)
-            .catch((e) => {
-                done.fail(e);
-            });
-    });
+    afterAll(() => db.destroy());
 
-    beforeEach((done) => {
-        buildApp()
-            .then((application) => {
-                app = application;
-                done();
-            })
-            .catch((e: Error) => {
-                done.fail(e);
-            });
-    });
+    beforeEach(() => buildApp().then((application) => (app = application)));
 }
 
 describe('MonitoringController', () => {

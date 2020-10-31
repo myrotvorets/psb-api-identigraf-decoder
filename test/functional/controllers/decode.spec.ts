@@ -20,18 +20,9 @@ async function buildApp(): Promise<express.Express> {
     return application;
 }
 
-afterEach(() => mockKnex.getTracker().uninstall());
+beforeAll(() => buildApp().then((application) => (app = application)));
 
-beforeAll((done) => {
-    buildApp()
-        .then((application) => {
-            app = application;
-            done();
-        })
-        .catch((e: Error) => {
-            done.fail(e);
-        });
-});
+afterEach(() => mockKnex.getTracker().uninstall());
 
 describe('DecodeController', () => {
     describe('Error Handling', () => {
