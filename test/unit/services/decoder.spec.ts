@@ -34,7 +34,7 @@ describe('DecoderService', () => {
 
         it('should properly process valid items', () => {
             const input = ['!1-1-2-3', '!1-0-2-3', '!1-0-2-3', '!1-0-4-5'];
-            const expected = {
+            const expected: Queue = {
                 0: [
                     [2, 3, '!1-0-2-3'],
                     [2, 3, '!1-0-2-3'],
