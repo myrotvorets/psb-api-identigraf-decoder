@@ -42,7 +42,7 @@
   "devDependencies": {
     "@myrotvorets/eslint-config-myrotvorets-ts": "^2.1.0",
     "@types/express": "^4.17.9",
-    "@types/jest": "^26.0.16",
+    "@types/jest": "^26.0.19",
     "@types/mock-knex": "^0.4.3",
     "@types/morgan": "^1.9.2",
     "@types/multer": "^1.4.4",
