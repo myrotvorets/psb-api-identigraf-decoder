@@ -40,7 +40,7 @@
     "objection": "^2.2.3"
   },
   "devDependencies": {
-    "@myrotvorets/eslint-config-myrotvorets-ts": "^2.2.0",
+    "@myrotvorets/eslint-config-myrotvorets-ts": "^2.2.1",
     "@types/express": "^4.17.9",
     "@types/jest": "^26.0.19",
     "@types/mock-knex": "^0.4.3",
