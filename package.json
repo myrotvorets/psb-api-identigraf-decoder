@@ -34,7 +34,7 @@
     "envalid": "^6.0.2",
     "express": "^4.17.1",
     "express-openapi-validator": "^4.9.0",
-    "knex": "^0.21.14",
+    "knex": "^0.21.15",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
     "objection": "^2.2.3"
