@@ -28,7 +28,7 @@
     "@opentelemetry/plugin-express": "^0.12.1",
     "envalid": "^6.0.2",
     "express": "^4.17.1",
-    "express-openapi-validator": "^4.10.6",
+    "express-openapi-validator": "^4.10.11",
     "knex": "^0.21.14",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
