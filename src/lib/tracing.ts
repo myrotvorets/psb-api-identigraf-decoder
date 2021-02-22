@@ -6,16 +6,15 @@ import { OpenTelemetryConfigurator } from '@myrotvorets/opentelemetry-configurat
 if (+(process.env.ENABLE_TRACING || 0)) {
     const configurator = new OpenTelemetryConfigurator({
         serviceName: 'psb-api-identigraf-decoder',
-        tracer: {
-            plugins: {
-                express: {},
-                http: {},
-                https: {},
-                knex: {
-                    path: '@myrotvorets/opentelemetry-plugin-knex',
+        instrumentations: [
+            {
+                plugins: {
+                    knex: {
+                        path: '@myrotvorets/opentelemetry-plugin-knex',
+                    },
                 },
             },
-        },
+        ],
     });
 
     configurator.start().catch((e) => console.error('Failed to initialize OpenTelemetry:', e));
