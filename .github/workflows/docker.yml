@@ -57,7 +57,7 @@ jobs:
           elif [ "${{ github.event_name }}" = "push" ]; then
             TAGS="$TAGS,${DOCKER_IMAGE}:sha-${GITHUB_SHA::8}"
           fi
-          echo ::set-output name=primaryTag::${DOCKER_IMAGE}:${VERSION}
+          echo ::set-output name=image::${DOCKER_IMAGE}
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=tags::${TAGS}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
@@ -129,5 +129,5 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
 
       - name: Push the image
-        run: docker push --all-tags "${{ steps.prep.outputs.primaryTag }}"
+        run: docker push --all-tags "${{ steps.prep.outputs.image }}"
         if: ${{ github.event_name != 'pull_request' }}
