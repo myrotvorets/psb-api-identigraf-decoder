@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response, Router } from 'express';
+import asyncWrapper from '@myrotvorets/express-async-middleware-wrapper';
 import DecoderService, { DecodedItem } from '../services/decoder';
 
 type DefaultParams = Record<string, string>;
@@ -10,23 +11,22 @@ interface DecodeBody {
     items: Record<string, DecodedItem>;
 }
 
-function decodeHandler(
+async function decodeHandler(
     req: Request<DefaultParams, DecodeBody, DecodeRequestBody>,
     res: Response<DecodeBody>,
     next: NextFunction,
-): void {
-    DecoderService.decode(req.body)
-        .then((items) =>
-            res.json({
-                success: true,
-                items,
-            }),
-        )
-        .catch((e) => setImmediate(next, e));
+): Promise<void> {
+    const items = await DecoderService.decode(req.body);
+    res.json({
+        success: true,
+        items,
+    });
+
+    next();
 }
 
 export default function (): Router {
     const router = Router();
-    router.post('/decode', decodeHandler);
+    router.post('/decode', asyncWrapper(decodeHandler));
     return router;
 }
