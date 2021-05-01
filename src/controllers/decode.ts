@@ -22,7 +22,7 @@ function decodeHandler(
                 items,
             }),
         )
-        .catch(next);
+        .catch((e) => setImmediate(next, e));
 }
 
 export default function (): Router {

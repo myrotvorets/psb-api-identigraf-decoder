@@ -4,10 +4,20 @@
     "project": ["./tsconfig.json"]
   },
   "extends": [
-    "@myrotvorets/myrotvorets-ts"
+    "@myrotvorets/myrotvorets-ts",
+    "plugin:jest/recommended",
+    "plugin:jest/style"
   ],
+  "rules": {
+    "jest/expect-expect": "off"
+  },
   "env": {
     "node": true,
     "jest": true
+  },
+  "settings": {
+    "jest": {
+      "version": 26
+    }
   }
 }
