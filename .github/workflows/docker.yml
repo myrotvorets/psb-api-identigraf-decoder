@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - '.github/**'
       - 'test/**'
+      - '!.github/workflows/docker.yml'
     tags:
       - '*.*.*'
   pull_request:
@@ -17,6 +18,7 @@ on:
     paths-ignore:
       - '.github/**'
       - 'test/**'
+      - '!.github/workflows/docker.yml'
   workflow_dispatch:
 
 jobs:
