@@ -7,21 +7,24 @@ on:
     paths:
       - package.json
       - package-lock.json
+      - .github/workflows/package-audit.yml
   pull_request:
     branches:
       - master
     paths:
       - package.json
       - package-lock.json
+      - .github/workflows/package-audit.yml
   workflow_dispatch:
 
 jobs:
   audit-npm:
+    name: npm audit
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node_version: ["14"]
-
+        node_version:
+          - 16
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -35,10 +38,12 @@ jobs:
         run: npm audit --production
 
   audit-retire:
+    name: Retire.js
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node_version: ["14"]
+        node_version:
+          - 16
 
     steps:
       - name: Checkout
@@ -73,3 +78,45 @@ jobs:
 
       - name: Run audit
         run: retire -n
+
+  audit-tryivy:
+    name: Trivy scan
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version:
+          - 16
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Determine security scan parameters
+        id: scanparams
+        run: |
+          if \
+            [ "${{ github.event_name }}" != "pull_request" ] || \
+            ([ "${{ github.event.pull_request.head.repo.full_name }}" == "${{ github.event.pull_request.base.repo.full_name }}" ] && [ "${{ github.event.sender.login }}" != "dependabot[bot]" ]) \
+          then
+            echo ::set-output name=format::template
+            echo ::set-output name=template::@/contrib/sarif.tpl
+            echo ::set-output name=output::trivy-results.sarif
+          else
+            echo ::set-output name=format::table
+            echo ::set-output name=template::
+            echo ::set-output name=output::
+          fi
+
+      - name: Security Scan
+        uses: aquasecurity/trivy-action@master
+        id: scan
+        with:
+          scan-type: fs
+          format: ${{ steps.scanparams.outputs.format }}
+          template: ${{ steps.scanparams.outputs.template }}
+          output: ${{ steps.scanparams.outputs.output }}
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: trivy-results.sarif
+        if: steps.scanparams.outputs.output != ''
