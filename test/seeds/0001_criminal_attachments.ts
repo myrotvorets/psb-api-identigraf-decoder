@@ -22,8 +22,7 @@ const seedData = [
     {
         id: 1,
         att_id: 6,
-        path:
-            'criminals/00/37/41/criminals/00/37/41/543aefe08dd8d_5425033dcb00e_zakonoproekt-ne-predusmatrivaet-perechen-netsenzurnih-slov-kotorie-zapreshchaetsya-ispolzovat-v-SMI.jpg',
+        path: 'criminals/00/37/41/criminals/00/37/41/543aefe08dd8d_5425033dcb00e_zakonoproekt-ne-predusmatrivaet-perechen-netsenzurnih-slov-kotorie-zapreshchaetsya-ispolzovat-v-SMI.jpg',
         mime_type: 'image/jpeg',
         sort_order: 6,
     },

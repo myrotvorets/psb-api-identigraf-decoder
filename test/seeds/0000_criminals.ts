@@ -25,8 +25,7 @@ const seedData = [
         name: 'Захарченко Александр Владимирович',
         nname: 'Захарченко Олександр Володимирович',
         tname: 'Zaharchenko Aleksandr Vladimirovich',
-        sname:
-            'Захарченко Александр Владимирович Захарченко Олександр Володимирович Zaharchenko Aleksandr Vladimirovich',
+        sname: 'Захарченко Александр Владимирович Захарченко Олександр Володимирович Zaharchenko Aleksandr Vladimirovich',
         dob: '1976-06-26',
         country: 'Украина',
         address: 'Донецкая обл., г. Донецк,',
@@ -42,8 +41,7 @@ const seedData = [
         name: 'Андрео Сергей Владимирович',
         nname: 'Андрео Сергій Володимирович; Андрєо Сергій Володимирович',
         tname: 'Andreo Sergej Vladimirovich',
-        sname:
-            'Андрео Сергей Владимирович Андрео Сергій Володимирович Андрєо Сергій Володимирович Andreo Sergej Vladimirovich',
+        sname: 'Андрео Сергей Владимирович Андрео Сергій Володимирович Андрєо Сергій Володимирович Andreo Sergej Vladimirovich',
         dob: '0000-00-00',
         country: '',
         address: '',
