@@ -2,7 +2,7 @@
 
 import { join } from 'path';
 import { cleanEnv, num, str } from 'envalid';
-import type { Config } from 'knex';
+import type { Knex } from 'knex';
 
 interface DbEnv {
     NODE_ENV: string;
@@ -24,7 +24,7 @@ function getEnvironment(environment: NodeJS.Dict<string>): Readonly<DbEnv> {
     });
 }
 
-export function buildKnexConfig(environment: NodeJS.Dict<string> = process.env): Config {
+export function buildKnexConfig(environment: NodeJS.Dict<string> = process.env): Knex.Config {
     const env = getEnvironment(environment);
 
     return {

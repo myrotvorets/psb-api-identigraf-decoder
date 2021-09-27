@@ -1,6 +1,6 @@
 import express from 'express';
 import request from 'supertest';
-import knex from 'knex';
+import { Knex, knex } from 'knex';
 import { Model } from 'objection';
 import { buildKnexConfig } from '../../../src/knexfile';
 import { configureApp } from '../../../src/server';
@@ -8,7 +8,7 @@ import decodeController from '../../../src/controllers/decode';
 import { e2eResult } from '../../fixtures/results';
 
 let app: express.Express;
-let db: knex;
+let db: Knex;
 
 async function buildApp(): Promise<express.Express> {
     const application = express();
