@@ -7,7 +7,7 @@
         "rootDirs": ["./src", "./test"],
         "sourceMap": true,
         "declaration": false,
-        "removeComments": true,
+        "removeComments": false,
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": false,
