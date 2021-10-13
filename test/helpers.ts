@@ -4,7 +4,7 @@ import { criminalsResponse, photosResponse, primaryPhotosResponse } from './fixt
 export function decodeMyrotvoretsQueryHandler(query: QueryDetails, step: number): void {
     expect(step).toBeLessThanOrEqual(5);
     if (step > 1 && step < 5) {
-        expect(query.method).toEqual('select');
+        expect(query.method).toBe('select');
         expect(query.transacting).toBe(true);
 
         if (query.sql.includes('from `criminals`')) {
