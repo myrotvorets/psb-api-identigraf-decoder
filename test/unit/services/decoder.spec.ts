@@ -6,12 +6,13 @@ import DecoderService, { DecodedItem, Queue } from '../../../src/services/decode
 import { decodeMyrotvoretsResult } from '../../fixtures/results';
 import { decodeMyrotvoretsQueryHandler } from '../../helpers';
 
+type Item = [number, number, string];
 class MyDecoderService extends DecoderService {
     public static prepareV1Items(items: Readonly<string[]>, queue: Readonly<Queue>): Queue {
         return DecoderService.prepareV1Items(items, queue);
     }
 
-    public static decodeMyrotvorets(items?: [number, number, string][]): Promise<Record<string, DecodedItem>> {
+    public static decodeMyrotvorets(items?: Item[]): Promise<Record<string, DecodedItem>> {
         return DecoderService.decodeMyrotvorets(items);
     }
 }
@@ -59,7 +60,7 @@ describe('DecoderService', () => {
             mockKnex.unmock(db);
         });
 
-        it.each([[undefined], [[]]])('should return an empty object on empty input (%p)', (input) => {
+        it.each<Item[][]>([[undefined], [[]]])('should return an empty object on empty input (%p)', (input) => {
             const expected = {};
             return expect(MyDecoderService.decodeMyrotvorets(input)).resolves.toStrictEqual(expected);
         });

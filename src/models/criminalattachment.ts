@@ -12,6 +12,7 @@ export default class CriminalAttachment extends Model {
         return `https://psb4ukr.natocdn.net/${this.path}`;
     }
 
+    // eslint-disable-next-line no-use-before-define
     public static modifiers: Modifiers<QueryBuilder<CriminalAttachment>> = {
         findImages(builder): QueryBuilder<CriminalAttachment> {
             return builder.where('mime_type', 'LIKE', 'image/%');

@@ -10,8 +10,8 @@ export const decodeMyrotvoretsResult = {
         name: 'Name 2',
         country: 'Country 2',
         link: 'https://myrotvorets.center/criminal/name-2/',
-        primaryPhoto: null,
-        matchedPhoto: null,
+        primaryPhoto: null as string | null,
+        matchedPhoto: null as string | null,
     },
 };
 
@@ -30,7 +30,7 @@ export const e2eResult = {
             country: 'Украина',
             link: 'https://myrotvorets.center/criminal/zakharchenko-aleksandr-vladimirovich-2/',
             primaryPhoto: 'https://psb4ukr.natocdn.net/criminals/00/25/b9/19-zaharchenko-010.jpg',
-            matchedPhoto: null,
+            matchedPhoto: null as string | null,
         },
     },
 };
