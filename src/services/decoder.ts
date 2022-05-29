@@ -1,3 +1,6 @@
+/* eslint-disable jest/valid-title */
+/* eslint-disable jest/no-disabled-tests */
+/* eslint-disable jest/no-export */
 import { Model, Transaction } from 'objection';
 import Criminal from '../models/criminal';
 import CriminalAttachment from '../models/criminalattachment';
@@ -26,7 +29,7 @@ export default class DecoderService {
             const parts = item
                 .substring(1)
                 .split('-')
-                .map((x) => (/^(0|[1-9][0-9]{0,14})$/u.test(x) ? parseInt(x, 10) : NaN))
+                .map((x) => (/^(0|[1-9][0-9]{0,14})$/u.test(x) ? parseInt(x, 10) : NaN)) // NOSONAR
                 .filter((x) => !isNaN(x));
 
             if (parts.length === 4) {
