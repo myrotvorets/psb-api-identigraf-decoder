@@ -27,7 +27,7 @@ services:
       - './coverage:/srv/service/coverage'
 
   mysql:
-    image: mariadb:latest@sha256:6c466e30277f69808b490aff69a5ffee968a44bb2101ee17702615974254dfd6
+    image: mariadb:latest@sha256:bb39098029f443e8b02a1736c3cb4be1c5d6663a8355d4f9eb0b05693df4b9a0
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: test
