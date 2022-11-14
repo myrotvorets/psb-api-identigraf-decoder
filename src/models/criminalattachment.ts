@@ -9,7 +9,7 @@ export default class CriminalAttachment extends Model {
     public static tableName = 'criminal_attachments';
 
     public get link(): string {
-        return `https://psb4ukr.natocdn.net/${this.path}`;
+        return `https://cdn.myrotvorets.center/m/${this.path}`;
     }
 
     // eslint-disable-next-line no-use-before-define
