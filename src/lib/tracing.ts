@@ -1,15 +1,15 @@
 /* istanbul ignore file */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import { OpenTelemetryConfigurator } from '@myrotvorets/opentelemetry-configurator';
-// import { KnexPlugin } from '@myrotvorets/opentelemetry-plugin-knex';
+import { KnexInstrumentation } from '@myrotvorets/opentelemetry-plugin-knex';
 
 if (+(process.env.ENABLE_TRACING || 0)) {
     const configurator = new OpenTelemetryConfigurator({
         serviceName: 'psb-api-identigraf-decoder',
-        // instrumentations: [new KnexPlugin()],
+        instrumentations: [new KnexInstrumentation()],
     });
 
-    configurator.start().catch((e) => console.error('Failed to initialize OpenTelemetry:', e));
+    configurator.start();
     EventEmitter.defaultMaxListeners += 5;
 }
