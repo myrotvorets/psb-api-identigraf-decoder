@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default-member */
 import express from 'express';
 import request from 'supertest';
 import { Knex, knex } from 'knex';

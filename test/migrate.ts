@@ -1,4 +1,5 @@
-import knex from 'knex';
+/* eslint-disable import/no-named-as-default-member */
+import { knex } from 'knex';
 import { buildKnexConfig } from '../src/knexfile';
 
 (async (): Promise<void> => {
