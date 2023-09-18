@@ -1,25 +1,22 @@
-FROM myrotvorets/node:latest@sha256:695d3ed35bac430f20323366ae2e21b9975474013f5fb8429fd109673002672c AS base
+FROM myrotvorets/node:latest@sha256:695d3ed35bac430f20323366ae2e21b9975474013f5fb8429fd109673002672c AS build
 USER root
 WORKDIR /srv/service
 RUN chown nobody:nogroup /srv/service
 USER nobody:nogroup
-COPY --chown=nobody:nogroup ./package.json ./package-lock.json ./tsconfig.json .npmrc ./
+COPY --chown=nobody:nogroup ./package.json ./package-lock.json ./tsconfig.json .npmrc* ./
 
-FROM base AS deps
-RUN npm ci --only=prod
-
-FROM base AS build
 RUN \
     npm r --package-lock-only \
-        eslint @myrotvorets/eslint-config-myrotvorets-ts @typescript-eslint/eslint-plugin eslint-plugin-import eslint-plugin-prettier prettier eslint-plugin-sonarjs eslint-plugin-jest eslint-plugin-promise eslint-formatter-gha \
+        eslint @myrotvorets/eslint-config-myrotvorets-ts eslint-formatter-gha \
         @types/jest jest ts-jest supertest @types/supertest mock-knex @types/mock-knex jest-sonar-reporter jest-github-actions-reporter \
         nodemon sqlite3 && \
-    npm ci --ignore-scripts && \
-    rm -f .npmrc && \
+    npm ci --ignore-scripts --userconfig .npmrc.local && \
+    rm -f .npmrc.local && \
     npm rebuild && \
     npm run prepare --if-present
 COPY --chown=nobody:nobody ./src ./src
 RUN npm run build -- --declaration false --removeComments true --sourceMap false
+RUN npm prune --omit=dev
 
 FROM myrotvorets/node-min@sha256:d084349b8dad6f6b16eb2ef025356b61d988dd003545af78867e95e01b53c7fd
 USER root
@@ -31,4 +28,5 @@ USER nobody:nobody
 ENTRYPOINT ["/usr/bin/node", "index.js"]
 COPY --chown=nobody:nobody ./src/specs ./specs
 COPY --chown=nobody:nobody --from=build /srv/service/dist/ ./
-COPY --chown=nobody:nobody --from=deps /srv/service/node_modules ./node_modules
+COPY --chown=nobody:nobody --from=build /srv/service/node_modules ./node_modules
+COPY --chown=nobody:nobody ./package.json ./
