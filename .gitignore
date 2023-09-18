@@ -2,5 +2,6 @@
 /dist/
 /node_modules/
 /.vscode/
+/.npmrc.local
 /test-report.xml
 .env

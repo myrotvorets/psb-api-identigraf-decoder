@@ -1,5 +1,6 @@
+/* eslint-disable import/no-named-as-default-member */
 import mockKnex from 'mock-knex';
-import knex from 'knex';
+import { knex } from 'knex';
 import { Model } from 'objection';
 import { buildKnexConfig } from '../../../src/knexfile';
 import DecoderService, { DecodedItem, Queue } from '../../../src/services/decoder';
@@ -60,10 +61,13 @@ describe('DecoderService', () => {
             mockKnex.unmock(db);
         });
 
-        it.each<Item[][]>([[undefined], [[]]])('should return an empty object on empty input (%p)', (input) => {
-            const expected = {};
-            return expect(MyDecoderService.decodeMyrotvorets(input)).resolves.toStrictEqual(expected);
-        });
+        it.each<(Item[] | undefined)[]>([[undefined], [[]]])(
+            'should return an empty object on empty input (%p)',
+            (input) => {
+                const expected = {};
+                return expect(MyDecoderService.decodeMyrotvorets(input)).resolves.toStrictEqual(expected);
+            },
+        );
 
         it('should handle empty result sets gracefully', () => {
             const tracker = mockKnex.getTracker();
