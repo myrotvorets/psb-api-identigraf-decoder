@@ -1,6 +1,6 @@
-import { Model, Modifiers, QueryBuilder } from 'objection';
+import { Model, type Modifiers, type QueryBuilder } from 'objection';
 
-export default class CriminalAttachment extends Model {
+export class CriminalAttachment extends Model {
     public id!: number;
     public att_id!: number;
     public path!: string;
@@ -12,15 +12,14 @@ export default class CriminalAttachment extends Model {
         return `https://cdn.myrotvorets.center/m/${this.path}`;
     }
 
-    // eslint-disable-next-line no-use-before-define
-    public static modifiers: Modifiers<QueryBuilder<CriminalAttachment>> = {
-        findImages(builder): QueryBuilder<CriminalAttachment> {
+    public static modifiers: Modifiers<QueryBuilder<Model>> = {
+        findImages(builder): QueryBuilder<Model> {
             return builder.where('mime_type', 'LIKE', 'image/%');
         },
-        findByAttachmentIds(builder, attachmentIDs: number[]): QueryBuilder<CriminalAttachment> {
+        findByAttachmentIds(builder, attachmentIDs: number[]): QueryBuilder<Model> {
             return builder.whereIn('att_id', attachmentIDs);
         },
-        findPrimaryPhotos(builder, criminalIDs: number[]): QueryBuilder<CriminalAttachment> {
+        findPrimaryPhotos(builder, criminalIDs: number[]): QueryBuilder<Model> {
             return builder
                 .distinct(Model.raw('FIRST_VALUE(att_id) OVER (PARTITION BY id ORDER BY sort_order, att_id)'))
                 .whereIn('id', criminalIDs)

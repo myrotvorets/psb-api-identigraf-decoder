@@ -1,6 +1,6 @@
-/* istanbul ignore file */
-
-import { join } from 'path';
+/* c8 ignore start */
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { cleanEnv, num, str } from 'envalid';
 import type { Knex } from 'knex';
 
@@ -44,10 +44,13 @@ export function buildKnexConfig(environment: NodeJS.Dict<string> = process.env):
         },
         migrations: {
             tableName: 'knex_migrations_identigraf_decoder',
-            directory: join(__dirname, '..', 'test', 'migrations'),
+            directory: join(dirname(fileURLToPath(import.meta.url)), '..', 'test', 'migrations'),
+            loadExtensions: ['.mts'],
         },
         seeds: {
-            directory: join(__dirname, '..', 'test', 'seeds'),
+            directory: join(dirname(fileURLToPath(import.meta.url)), '..', 'test', 'seeds'),
+            loadExtensions: ['.mts'],
         },
     };
 }
+/* c8 ignore end */

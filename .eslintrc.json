@@ -1,23 +1,14 @@
 {
   "parserOptions": {
-    "ecmaVersion": 2020,
-    "project": ["./tsconfig.json"]
+    "project": ["./tsconfig.json"],
+    "sourceType": "module"
   },
   "extends": [
-    "@myrotvorets/myrotvorets-ts",
-    "plugin:jest/recommended",
-    "plugin:jest/style"
+    "@myrotvorets/myrotvorets-ts"
   ],
-  "rules": {
-    "jest/expect-expect": "off"
-  },
   "env": {
-    "node": true,
-    "jest": true
-  },
-  "settings": {
-    "jest": {
-      "version": 26
-    }
+    "es2022": true,
+    "mocha": true,
+    "node": true
   }
 }

@@ -1,10 +1,7 @@
-/* eslint-disable jest/valid-title */
-/* eslint-disable jest/no-disabled-tests */
-/* eslint-disable jest/no-export */
-import { Model, Transaction } from 'objection';
-import Criminal from '../models/criminal';
-import CriminalAttachment from '../models/criminalattachment';
-import { convertCollection } from '../lib/helpers';
+import { Model, type Transaction } from 'objection';
+import { Criminal } from '../models/criminal.mjs';
+import { CriminalAttachment } from '../models/criminalattachment.mjs';
+import { convertCollection } from '../lib/helpers.mjs';
 
 export interface DecodedItem {
     name: string;
@@ -17,7 +14,7 @@ export interface DecodedItem {
 type QueueItem = [criminalID: number, attachmentID: number, item: string];
 export type Queue = Record<number, QueueItem[]>;
 
-export default class DecoderService {
+export class DecoderService {
     public static decode(items: Readonly<string[]>): Promise<Record<string, DecodedItem>> {
         const v1OIDs = items.filter((item) => item.startsWith('!1-'));
         const queue = DecoderService.prepareV1Items(v1OIDs, {});

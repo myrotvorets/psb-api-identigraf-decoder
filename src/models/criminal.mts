@@ -1,6 +1,6 @@
 import { Model } from 'objection';
 
-export default class Criminal extends Model {
+export class Criminal extends Model {
     public id!: number;
     public slug!: string;
     public name!: string;

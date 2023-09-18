@@ -1,8 +1,8 @@
-/* eslint-disable import/no-named-as-default-member */
-import { knex } from 'knex';
-import { buildKnexConfig } from '../src/knexfile';
+import * as knexpkg from 'knex';
+import { buildKnexConfig } from '../src/knexfile.mjs';
 
-(async (): Promise<void> => {
+try {
+    const { knex } = knexpkg.default;
     const { NODE_ENV: env } = process.env;
 
     if (env !== 'development' && env !== 'test') {
@@ -18,6 +18,15 @@ import { buildKnexConfig } from '../src/knexfile';
 
     process.stdout.write('Creating tables\n');
     await db.migrate.latest();
+
+    if (process.env.SEED_TABLES === 'yes') {
+        process.stdout.write('Populating tables\n');
+        await db.seed.run();
+    }
+
     process.stdout.write('DONE\n');
     await db.destroy();
-})().catch((e) => console.error(e));
+} catch (e) {
+    console.error(e);
+    process.exit(1);
+}

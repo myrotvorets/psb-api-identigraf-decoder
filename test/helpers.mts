@@ -1,11 +1,12 @@
-import { QueryDetails } from 'mock-knex';
-import { criminalsResponse, photosResponse, primaryPhotosResponse } from './fixtures/queryresponses';
+import { expect } from 'chai';
+import type { QueryDetails } from 'mock-knex';
+import { criminalsResponse, photosResponse, primaryPhotosResponse } from './fixtures/queryresponses.mjs';
 
 export function decodeMyrotvoretsQueryHandler(query: QueryDetails, step: number): void {
-    expect(step).toBeLessThanOrEqual(5);
+    expect(step).to.be.greaterThanOrEqual(1).and.lessThanOrEqual(5);
     if (step > 1 && step < 5) {
-        expect(query.method).toBe('select');
-        expect(query.transacting).toBe(true);
+        expect(query.method).to.equal('select');
+        expect(query.transacting).to.be.true;
 
         if (query.sql.includes('from `criminals`')) {
             return query.response(criminalsResponse);
