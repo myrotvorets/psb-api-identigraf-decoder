@@ -1,11 +1,13 @@
 /* eslint-disable import/no-named-as-default-member */
+import { after, before, describe, it } from 'mocha';
+import { expect } from 'chai';
 import mockKnex from 'mock-knex';
-import { knex } from 'knex';
+import * as knexpkg from 'knex';
 import { Model } from 'objection';
-import { buildKnexConfig } from '../../../src/knexfile';
-import DecoderService, { DecodedItem, Queue } from '../../../src/services/decoder';
-import { decodeMyrotvoretsResult } from '../../fixtures/results';
-import { decodeMyrotvoretsQueryHandler } from '../../helpers';
+import { FakeClient } from '@myrotvorets/fake-knex-client';
+import { DecodedItem, DecoderService, Queue } from '../../../src/services/decoder.mjs';
+import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
+import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
 
 type Item = [number, number, string];
 class MyDecoderService extends DecoderService {
@@ -31,7 +33,7 @@ describe('DecoderService', () => {
             ];
             const expected = {};
             const actual = MyDecoderService.prepareV1Items(input, {});
-            expect(actual).toStrictEqual(expected);
+            expect(actual).to.deep.equal(expected);
         });
 
         it('should properly process valid items', () => {
@@ -45,76 +47,85 @@ describe('DecoderService', () => {
                 1: [[2, 3, '!1-1-2-3']],
             };
             const actual = MyDecoderService.prepareV1Items(input, {});
-            expect(actual).toStrictEqual(expected);
+            expect(actual).to.deep.equal(expected);
         });
     });
 
     describe('decodeMyrotvorets', () => {
-        const db = knex(buildKnexConfig({ MYSQL_DATABASE: 'fake' }));
-        beforeEach(() => {
+        let db: knexpkg.Knex;
+
+        before(() => {
+            const { knex } = knexpkg.default;
+            db = knex({ client: FakeClient });
             mockKnex.mock(db);
             Model.knex(db);
         });
 
-        afterEach(() => {
-            mockKnex.getTracker().uninstall();
-            mockKnex.unmock(db);
-        });
+        after(() => mockKnex.unmock(db));
 
-        it.each<(Item[] | undefined)[]>([[undefined], [[]]])(
-            'should return an empty object on empty input (%p)',
-            (input) => {
+        afterEach(() => mockKnex.getTracker().uninstall());
+
+        const table: (undefined | Item[])[] = [undefined, [] as Item[]];
+
+        table.forEach((input) => {
+            it(`should return an empty object on empty input (${JSON.stringify(input)})`, () => {
                 const expected = {};
-                return expect(MyDecoderService.decodeMyrotvorets(input)).resolves.toStrictEqual(expected);
-            },
-        );
+                return expect(MyDecoderService.decodeMyrotvorets(input)).to.become(expected);
+            });
+        });
 
         it('should handle empty result sets gracefully', () => {
             const tracker = mockKnex.getTracker();
             tracker.on('query', (query, step) => {
-                expect(step).toBeLessThanOrEqual(5);
+                expect(step).to.be.lessThanOrEqual(5);
                 if (step > 1 && step < 5) {
-                    // eslint-disable-next-line jest/no-conditional-expect
-                    expect(query.method).toBe('select');
-                    // eslint-disable-next-line jest/no-conditional-expect
-                    expect(query.transacting).toBe(true);
+                    expect(query.method).to.equal('select');
+                    expect(query.transacting).to.be.true;
                 }
 
                 query.response([]);
             });
 
             tracker.install();
-            return expect(MyDecoderService.decodeMyrotvorets([[1, 2, '!1-0-1-2']])).resolves.toEqual({});
+
+            const expected = {};
+            return expect(MyDecoderService.decodeMyrotvorets([[1, 2, '!1-0-1-2']])).to.become(expected);
         });
 
         it('should return the expected results', () => {
             const tracker = mockKnex.getTracker();
             tracker.on('query', decodeMyrotvoretsQueryHandler);
             tracker.install();
-            const input: [number, number, string][] = [
+            const input: Item[] = [
                 [1, 12, '!1-0-1-12'],
                 [2, 21, '!1-0-2-21'],
             ];
 
             const expected = decodeMyrotvoretsResult;
-            return expect(MyDecoderService.decodeMyrotvorets(input)).resolves.toStrictEqual(expected);
+            return expect(MyDecoderService.decodeMyrotvorets(input)).to.become(expected);
         });
     });
 
     describe('decode', () => {
-        const db = knex(buildKnexConfig({ MYSQL_DATABASE: 'fake' }));
-        beforeEach(() => {
+        let db: knexpkg.Knex;
+
+        before(() => {
+            const { knex } = knexpkg.default;
+            db = knex({ client: FakeClient });
             mockKnex.mock(db);
             Model.knex(db);
         });
 
-        afterEach(() => {
-            mockKnex.getTracker().uninstall();
+        after(() => {
             mockKnex.unmock(db);
+            return db.destroy();
         });
 
+        afterEach(() => mockKnex.getTracker().uninstall());
+
         it('should handle empty input', () => {
-            return expect(DecoderService.decode([])).resolves.toStrictEqual({});
+            const expected = {};
+            return expect(DecoderService.decode([])).to.become(expected);
         });
 
         it('should produce the expected results', () => {
@@ -124,7 +135,7 @@ describe('DecoderService', () => {
             const input = ['!1-0-1-12', '!1-0-2-21'];
 
             const expected = decodeMyrotvoretsResult;
-            return expect(MyDecoderService.decode(input)).resolves.toStrictEqual(expected);
+            return expect(MyDecoderService.decode(input)).to.become(expected);
         });
     });
 });

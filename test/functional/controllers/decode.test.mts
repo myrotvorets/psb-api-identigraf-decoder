@@ -1,32 +1,36 @@
 /* eslint-disable import/no-named-as-default-member */
-import express from 'express';
+import { after, before, describe, it } from 'mocha';
+import express, { type Express } from 'express';
 import request from 'supertest';
-import { Knex, knex } from 'knex';
+import * as knexpkg from 'knex';
 import mockKnex from 'mock-knex';
 import { Model } from 'objection';
-import { buildKnexConfig } from '../../../src/knexfile';
-import { configureApp } from '../../../src/server';
-import { decodeMyrotvoretsQueryHandler } from '../../helpers';
-import { decodeMyrotvoretsResult } from '../../fixtures/results';
-
-let app: express.Express;
-let db: Knex;
-
-async function buildApp(): Promise<express.Express> {
-    const application = express();
-    db = knex(buildKnexConfig({ MYSQL_DATABASE: 'fake' }));
-    mockKnex.mock(db);
-    Model.knex(db);
-    await configureApp(application);
-    return application;
-}
-
-beforeAll(() => buildApp().then((application) => (app = application)));
-afterAll(() => mockKnex.unmock(db));
-
-afterEach(() => mockKnex.getTracker().uninstall());
+import { FakeClient } from '@myrotvorets/fake-knex-client';
+import { configureApp } from '../../../src/server.mjs';
+import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
+import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
 
 describe('DecodeController', () => {
+    let app: Express;
+    let db: knexpkg.Knex;
+
+    before(() => {
+        const { knex } = knexpkg.default;
+        db = knex({ client: FakeClient });
+        mockKnex.mock(db);
+        Model.knex(db);
+
+        app = express();
+        return configureApp(app);
+    });
+
+    after(() => {
+        mockKnex.unmock(db);
+        return db.destroy();
+    });
+
+    afterEach(() => mockKnex.getTracker().uninstall());
+
     describe('Error Handling', () => {
         it('should fail the request without body', () => {
             return request(app)
@@ -63,15 +67,10 @@ describe('DecodeController', () => {
             return request(app).get('/admin').expect(404);
         });
 
-        it.each<['get' | 'put' | 'head' | 'delete' | 'patch' | 'options']>([
-            ['get'],
-            ['put'],
-            ['head'],
-            ['delete'],
-            ['patch'],
-            ['options'],
-        ])('should return a 405 on disallowed methods (%s)', (method) => {
-            return request(app)[method]('/decode').expect(405);
+        const methods = ['get', 'put', 'head', 'delete', 'patch', 'options'] as const;
+        methods.forEach((method) => {
+            it(`should return a 405 on disallowed methods (${method})`, () =>
+                request(app)[method]('/decode').expect(405));
         });
     });
 

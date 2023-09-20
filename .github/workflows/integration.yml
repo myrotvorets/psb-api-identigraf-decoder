@@ -1,0 +1,30 @@
+name: Integration Testing
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Integration Testing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4.0.0
+        with:
+          submodules: true
+
+      - name: Create coverage directory
+        run: install -d coverage -m 0777
+
+      - name: Set up auth token
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > .npmrc.local
+
+      - name: Run tests
+        run: docker-compose -f docker-compose-ci.yml up --build --abort-on-container-exit --renew-anon-volumes

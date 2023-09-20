@@ -1,0 +1,11 @@
+FROM myrotvorets/node:latest@sha256:30d8bd989c968ae169dd10b96063807b10ca0b0c5dd51407197527fdc8c54900
+USER root
+WORKDIR /srv/service
+RUN chown nobody:nobody /srv/service
+USER nobody:nobody
+COPY --chown=nobody:nobody ./package.json ./package-lock.json ./tsconfig.json .npmrc* ./
+RUN \
+    npm ci --ignore-scripts --userconfig .npmrc.local && \
+    npm rebuild && \
+    npm run prepare --if-present
+COPY --chown=nobody:nobody ./ ./

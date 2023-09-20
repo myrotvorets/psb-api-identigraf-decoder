@@ -1,12 +1,9 @@
-version: '3.0'
-
 services:
   decoder:
     build:
       context: ./
-      dockerfile: ./Dockerfile-ci
-      args:
-        GPR_AUTH_TOKEN: $GPR_AUTH_TOKEN
+      dockerfile: ./Dockerfile.ci
+    command: ["/usr/bin/npm", "run", "ci"]
     environment:
       NODE_ENV: test
       MYSQL_DATABASE: test
@@ -17,13 +14,15 @@ services:
     depends_on:
       - mysql
     volumes:
+      - './src:/srv/service/src:ro'
       - './test:/srv/service/test:ro'
+      - './.c8rc.json:/srv/service/.c8rc.json:ro'
       - './.eslintignore:/srv/service/.eslintignore:ro'
       - './.eslintrc.json:/srv/service/.eslintrc.json:ro'
       - './.prettierignore:/srv/service/.prettierignore:ro'
       - './.prettierrc.json:/srv/service/.prettierrc.json:ro'
-      - './jest.config.js:/srv/service/jest.config.js:ro'
-      - './test-report.xml:/srv/service/test-report.xml'
+      - './.mocharc.cjs:/srv/service/.mocharc.cjs:ro'
+      - './mocha.setup.mjs:/srv/service/mocha.setup.mjs:ro'
       - './coverage:/srv/service/coverage'
 
   mysql:
@@ -35,7 +34,7 @@ services:
       MYSQL_PASSWORD: test
       MYSQL_INITDB_SKIP_TZINFO: "1"
     volumes:
-      - mysql_data
+      - mysql_data:/var/lib/mysql
 
 volumes:
   mysql_data:

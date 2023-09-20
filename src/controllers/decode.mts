@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response, Router } from 'express';
-import asyncWrapper from '@myrotvorets/express-async-middleware-wrapper';
-import DecoderService, { DecodedItem } from '../services/decoder';
+import { type NextFunction, type Request, type Response, Router } from 'express';
+import { asyncWrapperMiddleware } from '@myrotvorets/express-async-middleware-wrapper';
+import { DecodedItem, DecoderService } from '../services/decoder.mjs';
 
 type DefaultParams = Record<string, string>;
 
 type DecodeRequestBody = string[];
 
-interface DecodeBody {
+export interface DecodeBody {
     success: true;
     items: Record<string, DecodedItem>;
 }
@@ -25,8 +25,8 @@ async function decodeHandler(
     next();
 }
 
-export default function (): Router {
+export function decodeController(): Router {
     const router = Router();
-    router.post('/decode', asyncWrapper(decodeHandler));
+    router.post('/decode', asyncWrapperMiddleware(decodeHandler));
     return router;
 }

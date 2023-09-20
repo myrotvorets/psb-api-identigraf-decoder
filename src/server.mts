@@ -1,32 +1,37 @@
-import express, { json } from 'express';
-import { Knex, knex } from 'knex';
-import { join } from 'path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import express, { type Express, json } from 'express';
+import * as knexpkg from 'knex';
 import { installOpenApiValidator } from '@myrotvorets/oav-installer';
 import { errorMiddleware, notFoundMiddleware } from '@myrotvorets/express-microservice-middlewares';
 import { createServer } from '@myrotvorets/create-server';
 import morgan from 'morgan';
 import { Model } from 'objection';
 
-import { buildKnexConfig } from './knexfile';
-import { environment } from './lib/environment';
+import { buildKnexConfig } from './knexfile.mjs';
+import { environment } from './lib/environment.mjs';
 
-import decodeController from './controllers/decode';
-import monitoringController from './controllers/monitoring';
+import { decodeController } from './controllers/decode.mjs';
+import { monitoringController } from './controllers/monitoring.mjs';
 
-export async function configureApp(app: express.Express): Promise<void> {
-    const env = environment();
+export async function configureApp(app: Express): Promise<void> {
+    const env = environment(true);
 
     app.use(json());
 
-    await installOpenApiValidator(join(__dirname, 'specs', 'identigraf-decoder.yaml'), app, env.NODE_ENV);
+    await installOpenApiValidator(
+        join(dirname(fileURLToPath(import.meta.url)), 'specs', 'identigraf-decoder.yaml'),
+        app,
+        env.NODE_ENV,
+    );
 
     app.use('/', decodeController());
     app.use('/', notFoundMiddleware);
     app.use(errorMiddleware);
 }
 
-/* istanbul ignore next */
-export function setupApp(): express.Express {
+/* c8 ignore start */
+export function setupApp(): Express {
     const app = express();
     app.set('strict routing', true);
     app.set('x-powered-by', false);
@@ -40,14 +45,13 @@ export function setupApp(): express.Express {
     return app;
 }
 
-/* istanbul ignore next */
-function setupKnex(): Knex {
+export function setupKnex(): knexpkg.Knex {
+    const { knex } = knexpkg.default;
     const db = knex(buildKnexConfig());
     Model.knex(db);
     return db;
 }
 
-/* istanbul ignore next */
 export async function run(): Promise<void> {
     const [env, app, db] = [environment(), setupApp(), setupKnex()];
 
@@ -61,3 +65,4 @@ export async function run(): Promise<void> {
     });
     server.listen(env.PORT);
 }
+/* c8 ignore end */
