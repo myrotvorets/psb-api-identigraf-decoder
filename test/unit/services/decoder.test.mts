@@ -4,10 +4,10 @@ import { expect } from 'chai';
 import mockKnex from 'mock-knex';
 import * as knexpkg from 'knex';
 import { Model } from 'objection';
+import { FakeClient } from '@myrotvorets/fake-knex-client';
 import { DecodedItem, DecoderService, Queue } from '../../../src/services/decoder.mjs';
 import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
 import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
-import { FakeClient } from '../../fake-client.cjs';
 
 type Item = [number, number, string];
 class MyDecoderService extends DecoderService {

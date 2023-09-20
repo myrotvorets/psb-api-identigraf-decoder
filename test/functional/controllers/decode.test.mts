@@ -5,10 +5,10 @@ import request from 'supertest';
 import * as knexpkg from 'knex';
 import mockKnex from 'mock-knex';
 import { Model } from 'objection';
+import { FakeClient } from '@myrotvorets/fake-knex-client';
 import { configureApp } from '../../../src/server.mjs';
 import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
 import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
-import { FakeClient } from '../../fake-client.cjs';
 
 describe('DecodeController', () => {
     let app: Express;

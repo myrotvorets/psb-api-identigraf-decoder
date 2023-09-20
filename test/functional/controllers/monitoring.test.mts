@@ -4,8 +4,8 @@ import express, { type Express } from 'express';
 import request from 'supertest';
 import * as knexpkg from 'knex';
 import mockKnex from 'mock-knex';
+import { FakeClient } from '@myrotvorets/fake-knex-client';
 import { healthChecker, monitoringController } from '../../../src/controllers/monitoring.mjs';
-import { FakeClient } from '../../fake-client.cjs';
 
 describe('MonitoringController', () => {
     let app: Express;
