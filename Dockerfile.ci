@@ -9,4 +9,3 @@ RUN \
     npm rebuild && \
     npm run prepare --if-present
 COPY --chown=nobody:nobody ./ ./
-ENTRYPOINT ["/usr/bin/npm", "run", "ci"]

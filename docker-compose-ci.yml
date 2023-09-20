@@ -3,6 +3,7 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile.ci
+    command: ["/usr/bin/npm", "run", "ci"]
     environment:
       NODE_ENV: test
       MYSQL_DATABASE: test

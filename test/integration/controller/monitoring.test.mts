@@ -5,26 +5,27 @@ import type { Knex } from 'knex';
 import { configureApp, setupKnex } from '../../../src/server.mjs';
 import { monitoringController } from '../../../src/controllers/monitoring.mjs';
 
-if (process.env.RUN_INTEGRATION_TESTS) {
-    describe('MonitoringController (integration)', function () {
-        let app: Express;
-        let db: Knex;
+describe('MonitoringController (integration)', function () {
+    let app: Express;
+    let db: Knex | undefined = undefined;
 
-        before(() => {
-            db = setupKnex();
+    before(function () {
+        if (!process.env.RUN_INTEGRATION_TESTS) {
+            this.skip();
+        }
 
-            app = express();
-            app.use('/monitoring', monitoringController(db));
-            return configureApp(app);
-        });
+        db = setupKnex();
 
-        after(() => db.destroy());
-
-        const checker200 = (endpoint: string): Promise<unknown> =>
-            request(app).get(`/monitoring/${endpoint}`).expect(200);
-
-        it('Liveness Check should succeed', () => checker200('live'));
-        it('Readiness Check should succeed', () => checker200('ready'));
-        it('Health Check should succeed', () => checker200('health'));
+        app = express();
+        app.use('/monitoring', monitoringController(db));
+        return configureApp(app);
     });
-}
+
+    after(() => db?.destroy());
+
+    const checker200 = (endpoint: string): Promise<unknown> => request(app).get(`/monitoring/${endpoint}`).expect(200);
+
+    it('Liveness Check should succeed', () => checker200('live'));
+    it('Readiness Check should succeed', () => checker200('ready'));
+    it('Health Check should succeed', () => checker200('health'));
+});

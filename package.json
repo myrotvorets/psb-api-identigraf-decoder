@@ -11,11 +11,11 @@
     "lint": "eslint -f gha .",
     "lint:fix": "eslint --fix .",
     "pretest": "npm run lint",
-    "test": "mocha",
-    "test:coverage": "c8 mocha",
+    "test": "mocha test",
+    "test:coverage": "c8 mocha test",
     "posttest": "npm run build",
     "preci": "npm run wait-for-mysql && ts-node ./test/migrate.mts",
-    "ci": "npm run test:coverage"
+    "ci": "c8 mocha test/integration"
   },
   "author": "Myrotvorets <support@myrotvorets.center> (https://myrotvorets.center/)",
   "license": "MIT",
