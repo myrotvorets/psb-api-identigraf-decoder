@@ -6,7 +6,7 @@ type DefaultParams = Record<string, string>;
 
 type DecodeRequestBody = string[];
 
-interface DecodeBody {
+export interface DecodeBody {
     success: true;
     items: Record<string, DecodedItem>;
 }

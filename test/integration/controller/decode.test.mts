@@ -4,7 +4,7 @@ import request from 'supertest';
 import type { Knex } from 'knex';
 import { Model } from 'objection';
 import { configureApp, setupKnex } from '../../../src/server.mjs';
-import { e2eResult } from '../../fixtures/results.mjs';
+import { e2eData } from '../../fixtures/e2e.mjs';
 
 describe('DecodeController (integration)', function () {
     let app: Express;
@@ -25,16 +25,14 @@ describe('DecodeController (integration)', function () {
 
     after(() => db?.destroy());
 
-    it('should return the expected result', function () {
-        const input = ['!1-0-1-12', '!1-0-2-21'];
-
-        const expected = e2eResult;
-
-        return request(app)
-            .post('/decode')
-            .set('Content-Type', 'application/json')
-            .send(input)
-            .expect(200)
-            .expect(expected);
+    e2eData.forEach(({ request: input, response: expected, code }) => {
+        it(`should return the expected result (${JSON.stringify(input)})`, function () {
+            return request(app)
+                .post('/decode')
+                .set('Content-Type', 'application/json')
+                .send(input)
+                .expect(code)
+                .expect(expected);
+        });
     });
 });

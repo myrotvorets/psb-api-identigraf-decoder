@@ -23,7 +23,6 @@ services:
       - './.prettierrc.json:/srv/service/.prettierrc.json:ro'
       - './.mocharc.cjs:/srv/service/.mocharc.cjs:ro'
       - './mocha.setup.mjs:/srv/service/mocha.setup.mjs:ro'
-      - './test-report.xml:/srv/service/test-report.xml'
       - './coverage:/srv/service/coverage'
 
   mysql:
