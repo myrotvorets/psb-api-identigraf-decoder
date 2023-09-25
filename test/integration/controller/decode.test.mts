@@ -1,4 +1,3 @@
-import { after, before, describe, it } from 'mocha';
 import express, { type Express } from 'express';
 import request from 'supertest';
 import type { Knex } from 'knex';
@@ -23,8 +22,11 @@ describe('DecodeController (integration)', function () {
         return configureApp(app);
     });
 
-    after(() => db?.destroy());
+    after(function () {
+        return db?.destroy();
+    });
 
+    // eslint-disable-next-line mocha/no-setup-in-describe
     e2eData.forEach(({ request: input, response: expected, code }) => {
         it(`should return the expected result (${JSON.stringify(input)})`, function () {
             return request(app)

@@ -1,5 +1,4 @@
 /* eslint-disable import/no-named-as-default-member */
-import { after, before, describe, it } from 'mocha';
 import { expect } from 'chai';
 import mockKnex from 'mock-knex';
 import * as knexpkg from 'knex';
@@ -20,9 +19,9 @@ class MyDecoderService extends DecoderService {
     }
 }
 
-describe('DecoderService', () => {
-    describe('prepareV1Items', () => {
-        it('should reject invalid items', () => {
+describe('DecoderService', function () {
+    describe('prepareV1Items', function () {
+        it('should reject invalid items', function () {
             const input = [
                 '!1-t-c-a',
                 '!1-1-2-3-4',
@@ -31,12 +30,13 @@ describe('DecoderService', () => {
                 '!1-01-02-03',
                 '!1-1-2-1111111111111111',
             ];
+
             const expected = {};
             const actual = MyDecoderService.prepareV1Items(input, {});
             expect(actual).to.deep.equal(expected);
         });
 
-        it('should properly process valid items', () => {
+        it('should properly process valid items', function () {
             const input = ['!1-1-2-3', '!1-0-2-3', '!1-0-2-3', '!1-0-4-5'];
             const expected: Queue = {
                 0: [
@@ -46,35 +46,41 @@ describe('DecoderService', () => {
                 ],
                 1: [[2, 3, '!1-1-2-3']],
             };
+
             const actual = MyDecoderService.prepareV1Items(input, {});
             expect(actual).to.deep.equal(expected);
         });
     });
 
-    describe('decodeMyrotvorets', () => {
+    describe('decodeMyrotvorets', function () {
         let db: knexpkg.Knex;
 
-        before(() => {
+        before(function () {
             const { knex } = knexpkg.default;
             db = knex({ client: FakeClient });
             mockKnex.mock(db);
             Model.knex(db);
         });
 
-        after(() => mockKnex.unmock(db));
+        after(function () {
+            mockKnex.unmock(db);
+        });
 
-        afterEach(() => mockKnex.getTracker().uninstall());
+        afterEach(function () {
+            mockKnex.getTracker().uninstall();
+        });
 
         const table: (undefined | Item[])[] = [undefined, [] as Item[]];
 
+        // eslint-disable-next-line mocha/no-setup-in-describe
         table.forEach((input) => {
-            it(`should return an empty object on empty input (${JSON.stringify(input)})`, () => {
+            it(`should return an empty object on empty input (${JSON.stringify(input)})`, function () {
                 const expected = {};
                 return expect(MyDecoderService.decodeMyrotvorets(input)).to.become(expected);
             });
         });
 
-        it('should handle empty result sets gracefully', () => {
+        it('should handle empty result sets gracefully', function () {
             const tracker = mockKnex.getTracker();
             tracker.on('query', (query, step) => {
                 expect(step).to.be.lessThanOrEqual(5);
@@ -92,7 +98,7 @@ describe('DecoderService', () => {
             return expect(MyDecoderService.decodeMyrotvorets([[1, 2, '!1-0-1-2']])).to.become(expected);
         });
 
-        it('should return the expected results', () => {
+        it('should return the expected results', function () {
             const tracker = mockKnex.getTracker();
             tracker.on('query', decodeMyrotvoretsQueryHandler);
             tracker.install();
@@ -106,29 +112,31 @@ describe('DecoderService', () => {
         });
     });
 
-    describe('decode', () => {
+    describe('decode', function () {
         let db: knexpkg.Knex;
 
-        before(() => {
+        before(function () {
             const { knex } = knexpkg.default;
             db = knex({ client: FakeClient });
             mockKnex.mock(db);
             Model.knex(db);
         });
 
-        after(() => {
+        after(function () {
             mockKnex.unmock(db);
             return db.destroy();
         });
 
-        afterEach(() => mockKnex.getTracker().uninstall());
+        afterEach(function () {
+            return mockKnex.getTracker().uninstall();
+        });
 
-        it('should handle empty input', () => {
+        it('should handle empty input', function () {
             const expected = {};
             return expect(DecoderService.decode([])).to.become(expected);
         });
 
-        it('should produce the expected results', () => {
+        it('should produce the expected results', function () {
             const tracker = mockKnex.getTracker();
             tracker.on('query', decodeMyrotvoretsQueryHandler);
             tracker.install();

@@ -1,5 +1,4 @@
 /* eslint-disable import/no-named-as-default-member */
-import { after, before, describe, it } from 'mocha';
 import express, { type Express } from 'express';
 import request from 'supertest';
 import * as knexpkg from 'knex';
@@ -10,11 +9,11 @@ import { configureApp } from '../../../src/server.mjs';
 import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
 import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
 
-describe('DecodeController', () => {
+describe('DecodeController', function () {
     let app: Express;
     let db: knexpkg.Knex;
 
-    before(() => {
+    before(function () {
         const { knex } = knexpkg.default;
         db = knex({ client: FakeClient });
         mockKnex.mock(db);
@@ -24,15 +23,17 @@ describe('DecodeController', () => {
         return configureApp(app);
     });
 
-    after(() => {
+    after(function () {
         mockKnex.unmock(db);
         return db.destroy();
     });
 
-    afterEach(() => mockKnex.getTracker().uninstall());
+    afterEach(function () {
+        mockKnex.getTracker().uninstall();
+    });
 
-    describe('Error Handling', () => {
-        it('should fail the request without body', () => {
+    describe('Error Handling', function () {
+        it('should fail the request without body', function () {
             return request(app)
                 .post('/decode')
                 .set('Content-Type', 'application/json')
@@ -40,11 +41,11 @@ describe('DecodeController', () => {
                 .expect(/"code":"BAD_REQUEST"/u);
         });
 
-        it('should fail non-JSON requests', () => {
+        it('should fail non-JSON requests', function () {
             return request(app).post('/decode').set('Content-Type', 'text/plain').send('["!1-0-1-2-3"]').expect(415);
         });
 
-        it('should fail empty requests', () => {
+        it('should fail empty requests', function () {
             return request(app)
                 .post('/decode')
                 .set('Content-Type', 'application/json')
@@ -53,7 +54,7 @@ describe('DecodeController', () => {
                 .expect(/"code":"BAD_REQUEST"/u);
         });
 
-        it('should fail requests with too many items', () => {
+        it('should fail requests with too many items', function () {
             const data = Array(101).fill('!1-0-1-2');
             return request(app)
                 .post('/decode')
@@ -63,19 +64,21 @@ describe('DecodeController', () => {
                 .expect(/"code":"BAD_REQUEST"/u);
         });
 
-        it('should return a 404 on non-existing URLs', () => {
+        it('should return a 404 on non-existing URLs', function () {
             return request(app).get('/admin').expect(404);
         });
 
         const methods = ['get', 'put', 'head', 'delete', 'patch', 'options'] as const;
+        // eslint-disable-next-line mocha/no-setup-in-describe
         methods.forEach((method) => {
-            it(`should return a 405 on disallowed methods (${method})`, () =>
-                request(app)[method]('/decode').expect(405));
+            it(`should return a 405 on disallowed methods (${method})`, function () {
+                return request(app)[method]('/decode').expect(405);
+            });
         });
     });
 
-    describe('Normal operation', () => {
-        it('should return the expected result', () => {
+    describe('Normal operation', function () {
+        it('should return the expected result', function () {
             const tracker = mockKnex.getTracker();
             tracker.on('query', decodeMyrotvoretsQueryHandler);
             tracker.install();

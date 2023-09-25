@@ -1,4 +1,3 @@
-import { after, before, describe, it } from 'mocha';
 import express, { type Express } from 'express';
 import request from 'supertest';
 import type { Knex } from 'knex';
@@ -21,11 +20,21 @@ describe('MonitoringController (integration)', function () {
         return configureApp(app);
     });
 
-    after(() => db?.destroy());
+    after(function () {
+        return db?.destroy();
+    });
 
     const checker200 = (endpoint: string): Promise<unknown> => request(app).get(`/monitoring/${endpoint}`).expect(200);
 
-    it('Liveness Check should succeed', () => checker200('live'));
-    it('Readiness Check should succeed', () => checker200('ready'));
-    it('Health Check should succeed', () => checker200('health'));
+    it('Liveness Check should succeed', function () {
+        return checker200('live');
+    });
+
+    it('Readiness Check should succeed', function () {
+        return checker200('ready');
+    });
+
+    it('Health Check should succeed', function () {
+        return checker200('health');
+    });
 });
