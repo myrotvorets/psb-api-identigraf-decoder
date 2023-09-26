@@ -2,8 +2,6 @@ import { type NextFunction, type Request, type Response, Router } from 'express'
 import { asyncWrapperMiddleware } from '@myrotvorets/express-async-middleware-wrapper';
 import { DecodedItem, DecoderService } from '../services/decoder.mjs';
 
-type DefaultParams = Record<string, string>;
-
 type DecodeRequestBody = string[];
 
 export interface DecodeBody {
@@ -12,7 +10,7 @@ export interface DecodeBody {
 }
 
 async function decodeHandler(
-    req: Request<DefaultParams, DecodeBody, DecodeRequestBody>,
+    req: Request<never, DecodeBody, DecodeRequestBody, never>,
     res: Response<DecodeBody>,
     next: NextFunction,
 ): Promise<void> {

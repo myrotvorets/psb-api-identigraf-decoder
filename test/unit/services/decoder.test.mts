@@ -4,17 +4,16 @@ import mockKnex from 'mock-knex';
 import * as knexpkg from 'knex';
 import { Model } from 'objection';
 import { FakeClient } from '@myrotvorets/fake-knex-client';
-import { DecodedItem, DecoderService, Queue } from '../../../src/services/decoder.mjs';
+import { type DecodedItem, DecoderService, type Queue, type QueueItem } from '../../../src/services/decoder.mjs';
 import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
 import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
 
-type Item = [number, number, string];
 class MyDecoderService extends DecoderService {
     public static prepareV1Items(items: Readonly<string[]>, queue: Readonly<Queue>): Queue {
         return DecoderService.prepareV1Items(items, queue);
     }
 
-    public static decodeMyrotvorets(items?: Item[]): Promise<Record<string, DecodedItem>> {
+    public static decodeMyrotvorets(items?: QueueItem[]): Promise<Record<string, DecodedItem>> {
         return DecoderService.decodeMyrotvorets(items);
     }
 }
@@ -70,7 +69,7 @@ describe('DecoderService', function () {
             mockKnex.getTracker().uninstall();
         });
 
-        const table: (undefined | Item[])[] = [undefined, [] as Item[]];
+        const table: (undefined | QueueItem[])[] = [undefined, []];
 
         // eslint-disable-next-line mocha/no-setup-in-describe
         table.forEach((input) => {
@@ -102,7 +101,7 @@ describe('DecoderService', function () {
             const tracker = mockKnex.getTracker();
             tracker.on('query', decodeMyrotvoretsQueryHandler);
             tracker.install();
-            const input: Item[] = [
+            const input: QueueItem[] = [
                 [1, 12, '!1-0-1-12'],
                 [2, 21, '!1-0-2-21'],
             ];
@@ -128,7 +127,7 @@ describe('DecoderService', function () {
         });
 
         afterEach(function () {
-            return mockKnex.getTracker().uninstall();
+            mockKnex.getTracker().uninstall();
         });
 
         it('should handle empty input', function () {

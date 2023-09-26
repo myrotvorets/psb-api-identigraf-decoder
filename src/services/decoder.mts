@@ -11,7 +11,7 @@ export interface DecodedItem {
     matchedPhoto: string | null;
 }
 
-type QueueItem = [criminalID: number, attachmentID: number, item: string];
+export type QueueItem = [criminalID: number, attachmentID: number, item: string];
 export type Queue = Record<number, QueueItem[]>;
 
 export class DecoderService {
