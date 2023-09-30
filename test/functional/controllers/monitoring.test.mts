@@ -5,6 +5,7 @@ import request from 'supertest';
 import * as knexpkg from 'knex';
 import mockKnex from 'mock-knex';
 import { FakeClient } from '@myrotvorets/fake-knex-client';
+import type { HealthChecker } from '@cloudnative/health-connect';
 import { healthChecker, monitoringController } from '../../../src/controllers/monitoring.mjs';
 
 describe('MonitoringController', function () {
@@ -23,7 +24,7 @@ describe('MonitoringController', function () {
 
     beforeEach(function () {
         expect(healthChecker).not.to.be.undefined;
-        healthChecker.shutdownRequested = false;
+        (healthChecker as HealthChecker).shutdownRequested = false;
     });
 
     after(function () {
@@ -40,7 +41,7 @@ describe('MonitoringController', function () {
         request(app).get(`/monitoring/${endpoint}`).expect('Content-Type', /json/u).expect(200);
 
     const checker503 = (endpoint: string): Promise<unknown> => {
-        healthChecker.shutdownRequested = true;
+        (healthChecker as HealthChecker).shutdownRequested = true;
         return request(app).get(`/monitoring/${endpoint}`).expect('Content-Type', /json/u).expect(503);
     };
 
