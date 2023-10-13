@@ -14,6 +14,7 @@ export interface DecodedItem {
 export type QueueItem = [criminalID: number, attachmentID: number, item: string];
 export type Queue = Record<number, QueueItem[]>;
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class DecoderService {
     public static decode(items: Readonly<string[]>): Promise<Record<string, DecodedItem>> {
         const v1OIDs = items.filter((item) => item.startsWith('!1-'));
@@ -31,11 +32,11 @@ export class DecoderService {
 
             if (parts.length === 4) {
                 const [, typeID, criminalID, attachmentID] = parts;
-                if (accumulator[typeID] === undefined) {
-                    accumulator[typeID] = [];
+                if (accumulator[typeID!] === undefined) {
+                    accumulator[typeID!] = [];
                 }
 
-                accumulator[typeID].push([criminalID, attachmentID, item]);
+                accumulator[typeID!]!.push([criminalID!, attachmentID!, item]);
             }
 
             return accumulator;

@@ -9,15 +9,18 @@ export function decodeMyrotvoretsQueryHandler(query: QueryDetails, step: number)
         expect(query.transacting).to.be.true;
 
         if (query.sql.includes('from `criminals`')) {
-            return query.response(criminalsResponse);
+            query.response(criminalsResponse);
+            return;
         }
 
         if (query.sql.includes('FIRST_VALUE(att_id)')) {
-            return query.response(primaryPhotosResponse);
+            query.response(primaryPhotosResponse);
+            return;
         }
 
-        return query.response(photosResponse);
+        query.response(photosResponse);
+        return;
     }
 
-    return query.response([]);
+    query.response([]);
 }

@@ -10,7 +10,7 @@ export class Criminal extends Model {
     public address!: string;
     public description!: string;
 
-    public static tableName = 'criminals';
+    public static override tableName = 'criminals';
 
     public get link(): string {
         return `https://myrotvorets.center/criminal/${this.slug}/`;

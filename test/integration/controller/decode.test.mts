@@ -10,7 +10,7 @@ describe('DecodeController (integration)', function () {
     let db: Knex | undefined = undefined;
 
     before(async function () {
-        if (!process.env.RUN_INTEGRATION_TESTS) {
+        if (!process.env['RUN_INTEGRATION_TESTS']) {
             this.skip();
         }
 

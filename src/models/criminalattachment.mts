@@ -6,13 +6,13 @@ export class CriminalAttachment extends Model {
     public path!: string;
     public mime_type!: string;
 
-    public static tableName = 'criminal_attachments';
+    public static override tableName = 'criminal_attachments';
 
     public get link(): string {
         return `https://cdn.myrotvorets.center/m/${this.path}`;
     }
 
-    public static modifiers: Modifiers<QueryBuilder<Model>> = {
+    public static override modifiers: Modifiers<QueryBuilder<CriminalAttachment>> = {
         findImages(builder): QueryBuilder<Model> {
             return builder.where('mime_type', 'LIKE', 'image/%');
         },
