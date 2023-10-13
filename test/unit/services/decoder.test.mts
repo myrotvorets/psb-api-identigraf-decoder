@@ -9,11 +9,11 @@ import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
 import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
 
 class MyDecoderService extends DecoderService {
-    public static prepareV1Items(items: Readonly<string[]>, queue: Readonly<Queue>): Queue {
+    public static override prepareV1Items(items: Readonly<string[]>, queue: Readonly<Queue>): Queue {
         return DecoderService.prepareV1Items(items, queue);
     }
 
-    public static decodeMyrotvorets(items?: QueueItem[]): Promise<Record<string, DecodedItem>> {
+    public static override decodeMyrotvorets(items?: QueueItem[]): Promise<Record<string, DecodedItem>> {
         return DecoderService.decodeMyrotvorets(items);
     }
 }

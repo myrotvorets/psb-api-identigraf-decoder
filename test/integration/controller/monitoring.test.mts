@@ -9,7 +9,7 @@ describe('MonitoringController (integration)', function () {
     let db: Knex | undefined = undefined;
 
     before(function () {
-        if (!process.env.RUN_INTEGRATION_TESTS) {
+        if (!process.env['RUN_INTEGRATION_TESTS']) {
             this.skip();
         }
 
