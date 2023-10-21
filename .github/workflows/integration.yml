@@ -28,3 +28,11 @@ jobs:
 
       - name: Run tests
         run: docker-compose -f docker-compose-ci.yml up --build --abort-on-container-exit --renew-anon-volumes
+
+      - name: Install codecov
+        run: npm i -g codecov
+
+      - name: Run codecov
+        run: codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
