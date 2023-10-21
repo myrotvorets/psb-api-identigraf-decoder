@@ -1,25 +1,33 @@
-import { Model, type Transaction } from 'objection';
-import { Criminal } from '../models/criminal.mjs';
-import { CriminalAttachment } from '../models/criminalattachment.mjs';
+import type { DecodedItem, DecoderServiceInterface } from './decoderserviceinterface.mjs';
+import { ModelService } from './modelservice.mjs';
 import { convertCollection } from '../lib/helpers.mjs';
-
-export interface DecodedItem {
-    name: string;
-    country: string;
-    link: string;
-    primaryPhoto: string | null;
-    matchedPhoto: string | null;
-}
+import { type Criminal, CriminalModel } from '../models/criminal.mjs';
+import { type CriminalAttachment, CriminalAttachmentModel } from '../models/criminalattachment.mjs';
 
 export type QueueItem = [criminalID: number, attachmentID: number, item: string];
 export type Queue = Record<number, QueueItem[]>;
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class DecoderService {
-    public static decode(items: Readonly<string[]>): Promise<Record<string, DecodedItem>> {
+interface DecoderServiceOptions {
+    modelService: ModelService;
+    cdnPrefix: string;
+    urlPrefix: string;
+}
+
+export class DecoderService implements DecoderServiceInterface {
+    private readonly cdnPrefix: string;
+    private readonly modelService: ModelService;
+    private readonly urlPrefix: string;
+
+    public constructor({ cdnPrefix, modelService, urlPrefix }: DecoderServiceOptions) {
+        this.cdnPrefix = cdnPrefix;
+        this.modelService = modelService;
+        this.urlPrefix = urlPrefix;
+    }
+
+    public decode(items: Readonly<string[]>): Promise<Record<string, DecodedItem>> {
         const v1OIDs = items.filter((item) => item.startsWith('!1-'));
         const queue = DecoderService.prepareV1Items(v1OIDs, {});
-        return DecoderService.decodeMyrotvorets(queue[0]);
+        return this.decodeMyrotvorets(queue[0]);
     }
 
     protected static prepareV1Items(items: Readonly<string[]>, queue: Readonly<Queue>): Queue {
@@ -43,18 +51,19 @@ export class DecoderService {
         }, queue);
     }
 
-    protected static async decodeMyrotvorets(items: QueueItem[] = []): Promise<Record<string, DecodedItem>> {
+    protected async decodeMyrotvorets(items: QueueItem[] = []): Promise<Record<string, DecodedItem>> {
         if (!items.length) {
             return {};
         }
 
         const [criminalIDs, attachmentIDs] = DecoderService.getUniqueIDs(items);
-        const [criminals, attachments, primaryPhotos] = await Model.transaction((trx) =>
-            Promise.all([
-                DecoderService.getCriminals(trx, criminalIDs),
-                DecoderService.getAttachments(trx, attachmentIDs),
-                DecoderService.getPrimaryPhotos(trx, criminalIDs),
-            ]),
+        const [criminals, attachments, primaryPhotos] = await this.modelService.transaction(
+            (_trx, { criminal, criminalAttachment }) =>
+                Promise.all([
+                    DecoderService.getCriminals(criminal, criminalIDs),
+                    DecoderService.getAttachments(criminalAttachment, attachmentIDs),
+                    DecoderService.getPrimaryPhotos(criminalAttachment, criminalIDs),
+                ]),
         );
 
         const result: Record<string, DecodedItem> = {};
@@ -66,9 +75,9 @@ export class DecoderService {
                 result[key] = {
                     name: criminal.name,
                     country: criminal.country,
-                    link: criminal.link,
-                    primaryPhoto: primaryPhoto ? primaryPhoto.link : null,
-                    matchedPhoto: attachment && attachment.id === criminalID ? attachment.link : null,
+                    link: `${this.urlPrefix}${criminal.slug}/`,
+                    primaryPhoto: primaryPhoto ? `${this.cdnPrefix}${primaryPhoto.path}` : null,
+                    matchedPhoto: attachment?.id === criminalID ? `${this.cdnPrefix}${attachment.path}` : null,
                 };
             }
         }
@@ -87,29 +96,24 @@ export class DecoderService {
         return [Array.from(criminalIDs), Array.from(attachmentIDs)];
     }
 
-    private static async getCriminals(trx: Transaction, criminalIDs: number[]): Promise<Record<number, Criminal>> {
-        const items = await Criminal.query(trx).findByIds(criminalIDs);
+    private static async getCriminals(model: CriminalModel, criminalIDs: number[]): Promise<Record<number, Criminal>> {
+        const items = await model.byIds(criminalIDs);
         return convertCollection(items, 'id');
     }
 
     private static async getPrimaryPhotos(
-        trx: Transaction,
+        model: CriminalAttachmentModel,
         criminalIDs: number[],
     ): Promise<Record<number, CriminalAttachment>> {
-        const items = await CriminalAttachment.query(trx).whereIn(
-            'att_id',
-            CriminalAttachment.query(trx).modify('findPrimaryPhotos', criminalIDs),
-        );
-
+        const items = await model.primaryPhotos(criminalIDs);
         return convertCollection(items, 'id');
     }
 
     private static async getAttachments(
-        trx: Transaction,
+        model: CriminalAttachmentModel,
         attachmentIDs: number[],
     ): Promise<Record<number, CriminalAttachment>> {
-        const items = await CriminalAttachment.query(trx).modify(['findImages', 'findByAttachmentIds'], attachmentIDs);
-
+        const items = await model.imageAttachmentsByAttachmentIds(attachmentIDs);
         return convertCollection(items, 'att_id');
     }
 }

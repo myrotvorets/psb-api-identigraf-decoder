@@ -1,31 +1,25 @@
 /* eslint-disable import/no-named-as-default-member */
-import express, { type Express } from 'express';
+import { type Express } from 'express';
 import request from 'supertest';
-import * as knexpkg from 'knex';
 import mockKnex from 'mock-knex';
-import { Model } from 'objection';
-import { FakeClient } from '@myrotvorets/fake-knex-client';
-import { configureApp } from '../../../src/server.mjs';
+import { configureApp, createApp } from '../../../src/server.mjs';
 import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
 import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
+import { container } from '../../../src/lib/container.mjs';
 
 describe('DecodeController', function () {
     let app: Express;
-    let db: knexpkg.Knex;
 
-    before(function () {
-        const { knex } = knexpkg.default;
-        db = knex({ client: FakeClient });
-        mockKnex.mock(db);
-        Model.knex(db);
+    before(async function () {
+        await container.dispose();
+        app = createApp();
+        await configureApp(app);
 
-        app = express();
-        return configureApp(app);
+        mockKnex.mock(container.resolve('db'));
     });
 
     after(function () {
-        mockKnex.unmock(db);
-        return db.destroy();
+        return container.dispose();
     });
 
     afterEach(function () {

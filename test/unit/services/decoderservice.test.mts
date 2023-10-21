@@ -1,20 +1,24 @@
 /* eslint-disable import/no-named-as-default-member */
 import { expect } from 'chai';
 import mockKnex from 'mock-knex';
-import * as knexpkg from 'knex';
-import { Model } from 'objection';
-import { FakeClient } from '@myrotvorets/fake-knex-client';
-import { type DecodedItem, DecoderService, type Queue, type QueueItem } from '../../../src/services/decoder.mjs';
+import { asClass } from 'awilix';
+import { container, initializeContainer } from '../../../src/lib/container.mjs';
+import { DecoderServiceInterface } from '../../../src/services/decoderserviceinterface.mjs';
+import { DecoderService, type Queue, type QueueItem } from '../../../src/services/decoderservice.mjs';
 import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
 import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
 
 class MyDecoderService extends DecoderService {
-    public static override prepareV1Items(items: Readonly<string[]>, queue: Readonly<Queue>): Queue {
-        return DecoderService.prepareV1Items(items, queue);
+    public static override prepareV1Items(
+        ...params: Parameters<(typeof DecoderService)['prepareV1Items']>
+    ): ReturnType<(typeof DecoderService)['prepareV1Items']> {
+        return DecoderService.prepareV1Items(...params);
     }
 
-    public static override decodeMyrotvorets(items?: QueueItem[]): Promise<Record<string, DecodedItem>> {
-        return DecoderService.decodeMyrotvorets(items);
+    public override decodeMyrotvorets(
+        ...params: Parameters<DecoderService['decodeMyrotvorets']>
+    ): ReturnType<DecoderService['decodeMyrotvorets']> {
+        return super.decodeMyrotvorets(...params);
     }
 }
 
@@ -52,17 +56,18 @@ describe('DecoderService', function () {
     });
 
     describe('decodeMyrotvorets', function () {
-        let db: knexpkg.Knex;
+        let service: MyDecoderService;
 
-        before(function () {
-            const { knex } = knexpkg.default;
-            db = knex({ client: FakeClient });
-            mockKnex.mock(db);
-            Model.knex(db);
+        before(async function () {
+            await container.dispose();
+            initializeContainer();
+            container.register('decoderService', asClass(MyDecoderService).singleton());
+            mockKnex.mock(container.resolve('db'));
+            service = container.resolve('decoderService') as MyDecoderService;
         });
 
         after(function () {
-            mockKnex.unmock(db);
+            return container.dispose();
         });
 
         afterEach(function () {
@@ -75,7 +80,7 @@ describe('DecoderService', function () {
         table.forEach((input) => {
             it(`should return an empty object on empty input (${JSON.stringify(input)})`, function () {
                 const expected = {};
-                return expect(MyDecoderService.decodeMyrotvorets(input)).to.become(expected);
+                return expect(service.decodeMyrotvorets(input)).to.become(expected);
             });
         });
 
@@ -94,7 +99,7 @@ describe('DecoderService', function () {
             tracker.install();
 
             const expected = {};
-            return expect(MyDecoderService.decodeMyrotvorets([[1, 2, '!1-0-1-2']])).to.become(expected);
+            return expect(service.decodeMyrotvorets([[1, 2, '!1-0-1-2']])).to.become(expected);
         });
 
         it('should return the expected results', function () {
@@ -107,23 +112,22 @@ describe('DecoderService', function () {
             ];
 
             const expected = decodeMyrotvoretsResult;
-            return expect(MyDecoderService.decodeMyrotvorets(input)).to.become(expected);
+            return expect(service.decodeMyrotvorets(input)).to.become(expected);
         });
     });
 
     describe('decode', function () {
-        let db: knexpkg.Knex;
+        let service: DecoderServiceInterface;
 
-        before(function () {
-            const { knex } = knexpkg.default;
-            db = knex({ client: FakeClient });
-            mockKnex.mock(db);
-            Model.knex(db);
+        before(async function () {
+            await container.dispose();
+            initializeContainer();
+            mockKnex.mock(container.resolve('db'));
+            service = container.resolve('decoderService');
         });
 
         after(function () {
-            mockKnex.unmock(db);
-            return db.destroy();
+            return container.dispose();
         });
 
         afterEach(function () {
@@ -132,7 +136,7 @@ describe('DecoderService', function () {
 
         it('should handle empty input', function () {
             const expected = {};
-            return expect(DecoderService.decode([])).to.become(expected);
+            return expect(service.decode([])).to.become(expected);
         });
 
         it('should produce the expected results', function () {
@@ -142,7 +146,7 @@ describe('DecoderService', function () {
             const input = ['!1-0-1-12', '!1-0-2-21'];
 
             const expected = decodeMyrotvoretsResult;
-            return expect(MyDecoderService.decode(input)).to.become(expected);
+            return expect(service.decode(input)).to.become(expected);
         });
     });
 });

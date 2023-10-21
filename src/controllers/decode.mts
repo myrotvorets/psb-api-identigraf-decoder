@@ -1,6 +1,7 @@
 import { type NextFunction, type Request, type Response, Router } from 'express';
 import { asyncWrapperMiddleware } from '@myrotvorets/express-async-middleware-wrapper';
-import { DecodedItem, DecoderService } from '../services/decoder.mjs';
+import { LocalsWithContainer } from '../lib/container.mjs';
+import { DecodedItem } from '../services/decoderserviceinterface.mjs';
 
 type DecodeRequestBody = string[];
 
@@ -11,10 +12,11 @@ export interface DecodeBody {
 
 async function decodeHandler(
     req: Request<never, DecodeBody, DecodeRequestBody, never>,
-    res: Response<DecodeBody>,
+    res: Response<DecodeBody, LocalsWithContainer>,
     next: NextFunction,
 ): Promise<void> {
-    const items = await DecoderService.decode(req.body);
+    const service = res.locals.container.resolve('decoderService');
+    const items = await service.decode(req.body);
     res.json({
         success: true,
         items,

@@ -1,29 +1,45 @@
-import { Model, type Modifiers, type QueryBuilder } from 'objection';
+import type { Knex } from 'knex';
 
-export class CriminalAttachment extends Model {
-    public id!: number;
-    public att_id!: number;
-    public path!: string;
-    public mime_type!: string;
+export interface CriminalAttachment {
+    id: number;
+    att_id: number;
+    path: string;
+    mime_type: string;
+}
 
-    public static override tableName = 'criminal_attachments';
+interface ModelOptions {
+    db: Knex<CriminalAttachment, CriminalAttachment[]> | Knex.Transaction<CriminalAttachment, CriminalAttachment[]>;
+}
 
-    public get link(): string {
-        return `https://cdn.myrotvorets.center/m/${this.path}`;
+export class CriminalAttachmentModel {
+    public static readonly tableName = 'criminal_attachments';
+
+    private readonly db: Knex<CriminalAttachment, CriminalAttachment[]>;
+
+    public constructor({ db }: ModelOptions) {
+        this.db = db;
     }
 
-    public static override modifiers: Modifiers<QueryBuilder<CriminalAttachment>> = {
-        findImages(builder): QueryBuilder<Model> {
-            return builder.where('mime_type', 'LIKE', 'image/%');
-        },
-        findByAttachmentIds(builder, attachmentIDs: number[]): QueryBuilder<Model> {
-            return builder.whereIn('att_id', attachmentIDs);
-        },
-        findPrimaryPhotos(builder, criminalIDs: number[]): QueryBuilder<Model> {
-            return builder
-                .distinct(Model.raw('FIRST_VALUE(att_id) OVER (PARTITION BY id ORDER BY sort_order, att_id)'))
-                .whereIn('id', criminalIDs)
-                .modify('findImages');
-        },
-    };
+    private findPrimaryPhotos(criminalIDs: number[]): Knex.QueryBuilder<CriminalAttachment> {
+        return this.db(CriminalAttachmentModel.tableName)
+            .distinct(this.db.raw('FIRST_VALUE(att_id) OVER (PARTITION BY id ORDER BY sort_order, att_id)'))
+            .whereIn('id', criminalIDs)
+            .where('mime_type', 'LIKE', 'image/%');
+    }
+
+    public primaryPhotos(criminalIDs: number[]): Promise<CriminalAttachment[]> {
+        return this.db(CriminalAttachmentModel.tableName).whereIn('att_id', this.findPrimaryPhotos(criminalIDs));
+    }
+
+    public imageAttachmentsByAttachmentIds(attachmentIDs: number[]): Promise<CriminalAttachment[]> {
+        return this.db(CriminalAttachmentModel.tableName)
+            .whereIn('att_id', attachmentIDs)
+            .where('mime_type', 'LIKE', 'image/%');
+    }
+}
+
+declare module 'knex/types/tables.js' {
+    interface Tables {
+        [CriminalAttachmentModel.tableName]: CriminalAttachment;
+    }
 }

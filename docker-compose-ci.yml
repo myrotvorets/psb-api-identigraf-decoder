@@ -6,10 +6,11 @@ services:
     command: ["/usr/bin/npm", "run", "ci"]
     environment:
       NODE_ENV: test
-      MYSQL_DATABASE: test
-      MYSQL_HOST: mysql
-      MYSQL_USER: test
-      MYSQL_PASSWORD: test
+      KNEX_DRIVER: mysql2
+      KNEX_DATABASE: test
+      KNEX_HOST: mysql
+      KNEX_USER: test
+      KNEX_PASSWORD: test
       RUN_INTEGRATION_TESTS: "true"
     depends_on:
       - mysql
