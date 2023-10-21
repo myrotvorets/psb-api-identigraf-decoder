@@ -1,18 +1,40 @@
-import { Model } from 'objection';
+import type { Knex } from 'knex';
 
-export class Criminal extends Model {
-    public id!: number;
-    public slug!: string;
-    public name!: string;
-    public nname!: string;
-    public dob!: string;
-    public country!: string;
-    public address!: string;
-    public description!: string;
+export interface Criminal {
+    id: number;
+    slug: string;
+    name: string;
+    nname: string;
+    dob: string;
+    country: string;
+    address: string;
+    description: string;
+}
 
-    public static override tableName = 'criminals';
+interface ModelOptions {
+    db: Knex<Criminal, Criminal[]> | Knex.Transaction<Criminal, Criminal[]>;
+}
 
-    public get link(): string {
-        return `https://myrotvorets.center/criminal/${this.slug}/`;
+export class CriminalModel {
+    public static readonly tableName = 'criminals';
+
+    private readonly db: Knex<Criminal, Criminal[]>;
+
+    public constructor({ db }: ModelOptions) {
+        this.db = db;
+    }
+
+    public byId(id: number): Promise<Criminal | undefined> {
+        return this.db(CriminalModel.tableName).where('id', id).first();
+    }
+
+    public byIds(ids: number[]): Promise<Criminal[]> {
+        return this.db(CriminalModel.tableName).whereIn('id', ids);
+    }
+}
+
+declare module 'knex/types/tables.js' {
+    interface Tables {
+        [CriminalModel.tableName]: Criminal;
     }
 }

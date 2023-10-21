@@ -1,10 +1,11 @@
 /* eslint-disable import/no-named-as-default-member */
 import { expect } from 'chai';
-import express, { type Express } from 'express';
+import { type Express } from 'express';
 import request from 'supertest';
 import * as knexpkg from 'knex';
 import mockKnex from 'mock-knex';
 import { FakeClient } from '@myrotvorets/fake-knex-client';
+import { createApp } from '../../../src/server.mjs';
 import { healthChecker, monitoringController } from '../../../src/controllers/monitoring.mjs';
 
 describe('MonitoringController', function () {
@@ -16,8 +17,7 @@ describe('MonitoringController', function () {
         db = knex({ client: FakeClient });
         mockKnex.mock(db);
 
-        app = express();
-        app.disable('x-powered-by');
+        app = createApp();
         app.use('/monitoring', monitoringController(db));
     });
 

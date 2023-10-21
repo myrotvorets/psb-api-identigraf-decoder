@@ -1,27 +1,23 @@
-import express, { type Express } from 'express';
+import { type Express } from 'express';
 import request from 'supertest';
-import type { Knex } from 'knex';
-import { configureApp, setupKnex } from '../../../src/server.mjs';
-import { monitoringController } from '../../../src/controllers/monitoring.mjs';
+import { configureApp, createApp } from '../../../src/server.mjs';
+import { container } from '../../../src/lib/container.mjs';
 
 describe('MonitoringController (integration)', function () {
     let app: Express;
-    let db: Knex | undefined = undefined;
 
-    before(function () {
+    before(async function () {
         if (!process.env['RUN_INTEGRATION_TESTS']) {
             this.skip();
         }
 
-        db = setupKnex();
-
-        app = express();
-        app.use('/monitoring', monitoringController(db));
+        await container.dispose();
+        app = createApp();
         return configureApp(app);
     });
 
     after(function () {
-        return db?.destroy();
+        return container.dispose();
     });
 
     const checker200 = (endpoint: string): Promise<unknown> => request(app).get(`/monitoring/${endpoint}`).expect(200);
