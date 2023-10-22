@@ -3,8 +3,8 @@ import type { QueryDetails } from 'mock-knex';
 import { criminalsResponse, photosResponse, primaryPhotosResponse } from './fixtures/queryresponses.mjs';
 
 export function decodeMyrotvoretsQueryHandler(query: QueryDetails, step: number): void {
-    expect(step).to.be.greaterThanOrEqual(1).and.lessThanOrEqual(5);
-    if (step > 1 && step < 5) {
+    expect(step).to.be.greaterThanOrEqual(1).and.lessThanOrEqual(6);
+    if (step > 2 && step < 6) {
         expect(query.method).to.equal('select');
         expect(query.transacting).to.be.true;
 

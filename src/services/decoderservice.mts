@@ -64,6 +64,7 @@ export class DecoderService implements DecoderServiceInterface {
                     DecoderService.getAttachments(criminalAttachment, attachmentIDs),
                     DecoderService.getPrimaryPhotos(criminalAttachment, criminalIDs),
                 ]),
+            { readOnly: true },
         );
 
         const result: Record<string, DecodedItem> = {};

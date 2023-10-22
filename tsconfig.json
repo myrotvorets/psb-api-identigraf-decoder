@@ -18,7 +18,6 @@
         "noImplicitOverride": true,
         "noImplicitReturns": true,
         "esModuleInterop": true,
-        "allowJs": true,
         "resolveJsonModule": true
     },
     "compileOnSave": true,

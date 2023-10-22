@@ -87,8 +87,8 @@ describe('DecoderService', function () {
         it('should handle empty result sets gracefully', function () {
             const tracker = mockKnex.getTracker();
             tracker.on('query', (query, step) => {
-                expect(step).to.be.lessThanOrEqual(5);
-                if (step > 1 && step < 5) {
+                expect(step).to.be.lessThanOrEqual(6);
+                if (step > 2 && step < 6) {
                     expect(query.method).to.equal('select');
                     expect(query.transacting).to.be.true;
                 }
