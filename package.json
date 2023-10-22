@@ -13,10 +13,11 @@
     "typecheck": "tsc --noEmit",
     "pretest": "npm run lint",
     "test": "mocha test",
-    "test:coverage": "c8 mocha test",
+    "pretest:coverage": "npm run build",
+    "test:coverage": "rm -rf dist/src/specs && cp -R src/specs dist/src/ && JS_TESTS=1 c8 mocha dist/test",
     "posttest": "npm run build",
-    "preci": "npm run wait-for-mysql && SEED_TABLES=yes ts-node ./test/migrate.mts",
-    "ci": "c8 mocha test/integration"
+    "preci": "npm run build && npm run wait-for-mysql && cp -R src/specs dist/src/ && SEED_TABLES=yes node ./dist/test/migrate.mjs",
+    "ci": "JS_TESTS=1 c8 mocha dist/test/integration"
   },
   "author": "Myrotvorets <support@myrotvorets.center> (https://myrotvorets.center/)",
   "license": "MIT",

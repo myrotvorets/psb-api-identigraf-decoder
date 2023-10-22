@@ -15,7 +15,7 @@ export const requestDurationMiddleware: RequestHandler = (req, res, next): void 
         let route: string | undefined;
         if ('openapi' in req && req.openapi) {
             const r = req as OpenApiRequest;
-            // c8 ignore next
+            /* c8 ignore next */
             route = r.openapi!.openApiRoute || r.openapi!.expressRoute;
         }
 

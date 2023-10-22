@@ -32,6 +32,7 @@ export class ModelService {
 
     public transaction<T = unknown>(
         callback: (trx: Knex.Transaction, models: Models) => void | Promise<T>, // eslint-disable-line @typescript-eslint/no-invalid-void-type
+        config?: Knex.TransactionConfig,
     ): Promise<T> {
         return this._db.transaction<T>((trx) => {
             const models: Models = {
@@ -40,6 +41,6 @@ export class ModelService {
             };
 
             return callback(trx, models);
-        });
+        }, config);
     }
 }

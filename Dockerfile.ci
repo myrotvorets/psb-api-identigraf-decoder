@@ -9,3 +9,4 @@ RUN \
     npm rebuild && \
     npm run prepare --if-present
 COPY --chown=nobody:nobody ./ ./
+RUN mkdir dist

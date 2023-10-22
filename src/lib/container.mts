@@ -27,6 +27,7 @@ export type LocalsWithContainer = Record<'container', AwilixContainer<RequestCon
 
 export const container = createContainer<Container>();
 
+/* c8 ignore start */
 function createLogger({ req }: Partial<RequestContainer>): Logger {
     const logger = getLogger();
     logger.clearAttributes();
@@ -40,6 +41,7 @@ function createLogger({ req }: Partial<RequestContainer>): Logger {
 
     return logger;
 }
+/* c8 ignore stop */
 
 function createMeter(): Meter {
     return getMeter();

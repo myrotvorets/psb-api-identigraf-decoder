@@ -24,10 +24,6 @@ export class CriminalModel {
         this.db = db;
     }
 
-    public byId(id: number): Promise<Criminal | undefined> {
-        return this.db(CriminalModel.tableName).where('id', id).first();
-    }
-
     public byIds(ids: number[]): Promise<Criminal[]> {
         return this.db(CriminalModel.tableName).whereIn('id', ids);
     }
