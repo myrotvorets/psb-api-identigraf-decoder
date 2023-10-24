@@ -25,7 +25,11 @@ export function configureApp(app: Express): Promise<ReturnType<typeof initialize
                 app.use(requestDurationMiddleware, scopedContainerMiddleware, loggerMiddleware, json());
                 app.use('/monitoring', monitoringController(db));
 
-                await installOpenApiValidator(join(base, 'specs', 'identigraf-decoder.yaml'), app, env.NODE_ENV);
+                await installOpenApiValidator(
+                    join(base, 'specs', 'identigraf-decoder-private.yaml'),
+                    app,
+                    env.NODE_ENV,
+                );
 
                 app.use(decodeController(), notFoundMiddleware, errorMiddleware);
                 return container;
