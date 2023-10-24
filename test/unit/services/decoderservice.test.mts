@@ -127,6 +127,7 @@ describe('DecoderService', function () {
         });
 
         after(function () {
+            mockKnex.unmock(container.resolve('db'));
             return container.dispose();
         });
 
