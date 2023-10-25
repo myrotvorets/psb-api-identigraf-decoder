@@ -12,35 +12,31 @@ import { loggerMiddleware } from './middleware/logger.mjs';
 import { decodeController } from './controllers/decode.mjs';
 import { monitoringController } from './controllers/monitoring.mjs';
 
-export function configureApp(app: Express): Promise<ReturnType<typeof initializeContainer>> {
-    return getTracer().startActiveSpan(
-        'configureApp',
-        async (span): Promise<ReturnType<typeof initializeContainer>> => {
-            try {
-                const container = initializeContainer();
-                const env = container.resolve('environment');
-                const base = dirname(fileURLToPath(import.meta.url));
-                const db = container.resolve('db');
+export function configureApp(app: Express): ReturnType<typeof initializeContainer> {
+    return getTracer().startActiveSpan('configureApp', (span): ReturnType<typeof initializeContainer> => {
+        try {
+            const container = initializeContainer();
+            const env = container.resolve('environment');
+            const base = dirname(fileURLToPath(import.meta.url));
+            const db = container.resolve('db');
 
-                app.use(requestDurationMiddleware, scopedContainerMiddleware, loggerMiddleware, json());
-                app.use('/monitoring', monitoringController(db));
+            app.use(requestDurationMiddleware, scopedContainerMiddleware, loggerMiddleware, json());
+            app.use('/monitoring', monitoringController(db));
 
-                await installOpenApiValidator(
-                    join(base, 'specs', 'identigraf-decoder-private.yaml'),
-                    app,
-                    env.NODE_ENV,
-                );
-
-                app.use(decodeController(), notFoundMiddleware, errorMiddleware);
-                return container;
-            } /* c8 ignore start */ catch (e) {
-                recordErrorToSpan(e, span);
-                throw e;
-            } /* c8 ignore stop */ finally {
-                span.end();
-            }
-        },
-    );
+            app.use(
+                installOpenApiValidator(join(base, 'specs', 'identigraf-decoder-private.yaml'), env.NODE_ENV),
+                decodeController(),
+                notFoundMiddleware,
+                errorMiddleware,
+            );
+            return container;
+        } /* c8 ignore start */ catch (e) {
+            recordErrorToSpan(e, span);
+            throw e;
+        } /* c8 ignore stop */ finally {
+            span.end();
+        }
+    });
 }
 
 export function createApp(): Express {
@@ -55,7 +51,7 @@ export function createApp(): Express {
 /* c8 ignore start */
 export async function run(): Promise<void> {
     const app = createApp();
-    const container = await configureApp(app);
+    const container = configureApp(app);
     const env = container.resolve('environment');
 
     const server = await createServer(app);
