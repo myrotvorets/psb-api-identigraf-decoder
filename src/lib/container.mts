@@ -25,6 +25,9 @@ export interface RequestContainer {
 export type LocalsWithContainer = Record<'container', AwilixContainer<RequestContainer & Container>>;
 
 export const container = createContainer<Container>();
+process.on('beforeExit', () => {
+    container.dispose().catch((e) => console.error(e));
+});
 
 /* c8 ignore start */
 function createLogger({ req }: Partial<RequestContainer>): Logger {
