@@ -52,10 +52,7 @@ jobs:
           registry-url: https://npm.pkg.github.com
           test-script: 'test:coverage'
 
-      - name: Install codecov
-        run: npm i -g codecov
-
       - name: Run codecov
-        run: codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v3
+        with:
+          flags: unit-tests
