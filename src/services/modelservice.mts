@@ -13,21 +13,9 @@ export interface Models {
 
 export class ModelService {
     private readonly _db: Knex;
-    private readonly _criminal: CriminalModel;
-    private readonly _criminalAttachment: CriminalAttachmentModel;
 
     public constructor({ db }: ModelServiceOptions) {
         this._db = db;
-        this._criminal = new CriminalModel({ db });
-        this._criminalAttachment = new CriminalAttachmentModel({ db });
-    }
-
-    public get criminal(): CriminalModel {
-        return this._criminal;
-    }
-
-    public get criminalAttachment(): CriminalAttachmentModel {
-        return this._criminalAttachment;
     }
 
     public transaction<T = unknown>(

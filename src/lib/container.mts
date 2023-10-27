@@ -1,7 +1,7 @@
 import { AwilixContainer, asClass, asFunction, asValue, createContainer } from 'awilix';
 import type { NextFunction, Request, Response } from 'express';
 import * as knexpkg from 'knex';
-import { type Logger, type Meter, getLogger, getMeter } from '@myrotvorets/otel-utils';
+import { type Logger, getLogger } from '@myrotvorets/otel-utils';
 import { environment } from './environment.mjs';
 import { buildKnexConfig } from '../knexfile.mjs';
 import { DecoderService } from '../services/decoderservice.mjs';
@@ -11,7 +11,6 @@ import { ModelService } from '../services/modelservice.mjs';
 export interface Container {
     environment: ReturnType<typeof environment>;
     logger: Logger;
-    meter: Meter;
     db: knexpkg.Knex;
     decoderService: DecoderServiceInterface;
     modelService: ModelService;
@@ -43,10 +42,6 @@ function createLogger({ req }: Partial<RequestContainer>): Logger {
 }
 /* c8 ignore stop */
 
-function createMeter(): Meter {
-    return getMeter();
-}
-
 function createDatabase(): knexpkg.Knex {
     const { knex } = knexpkg.default;
     return knex(buildKnexConfig());
@@ -57,7 +52,6 @@ export function initializeContainer(): typeof container {
     container.register({
         environment: asValue(env),
         logger: asFunction(createLogger).scoped(),
-        meter: asFunction(createMeter).singleton(),
         cdnPrefix: asValue('https://cdn.myrotvorets.center/m/'),
         urlPrefix: asValue('https://myrotvorets.center/criminal/'),
         db: asFunction(createDatabase)

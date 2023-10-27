@@ -24,16 +24,6 @@ describe('decode', function () {
         mockKnex.getTracker().uninstall();
     });
 
-    describe('getters', function () {
-        it('criminal should return CriminalModel', function () {
-            expect(service.criminal).to.be.an('object').that.is.instanceOf(CriminalModel);
-        });
-
-        it('criminalAttachment should return CriminalAttachmentModel', function () {
-            expect(service.criminalAttachment).to.be.an('object').that.is.instanceOf(CriminalAttachmentModel);
-        });
-    });
-
     describe('#transaction', function () {
         it('should start a transaction', async function () {
             const tracker = mockKnex.getTracker();

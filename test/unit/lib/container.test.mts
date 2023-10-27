@@ -17,11 +17,6 @@ describe('Container', function () {
 
             expect(container.resolve('db')).to.be.a('function').that.has.property('name', 'knex');
 
-            expect(container.resolve('meter'))
-                .to.be.an('object')
-                .that.has.property('createCounter')
-                .that.is.a('function');
-
             expect(container.resolve('environment'))
                 .to.be.an('object')
                 .that.has.property('NODE_ENV')
