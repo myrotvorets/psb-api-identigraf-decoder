@@ -1,5 +1,6 @@
 {
     "extension": [".mjs"],
     "exclude": ["src/**", "dist/test/**", "mocha.setup.mjs"],
-    "reporter": ["text", "lcov"]
+    "reporter": ["text", "lcov"],
+    "report-dir": "./.reports/coverage"
 }
