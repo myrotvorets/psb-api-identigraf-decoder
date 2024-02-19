@@ -27,7 +27,7 @@ export function configureApp(app: Express): ReturnType<typeof initializeContaine
                 installOpenApiValidator(join(base, 'specs', 'identigraf-decoder-private.yaml'), env.NODE_ENV),
                 decodeController(),
                 notFoundMiddleware,
-                errorMiddleware,
+                errorMiddleware(),
             );
             return container;
         } /* c8 ignore start */ catch (e) {

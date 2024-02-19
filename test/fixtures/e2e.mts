@@ -1,10 +1,10 @@
-import type { ErrorResponse } from '@myrotvorets/express-microservice-middlewares';
+import type { ApiErrorResponse } from '@myrotvorets/express-microservice-middlewares';
 import type { DecodeBody } from '../../src/controllers/decode.mjs';
 
 interface E2ETestData {
     code: number;
     request: string[];
-    response: ErrorResponse | DecodeBody;
+    response: ApiErrorResponse | DecodeBody;
 }
 
 export const e2eData: E2ETestData[] = [
