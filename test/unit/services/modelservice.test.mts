@@ -6,7 +6,7 @@ import { ModelService } from '../../../src/services/modelservice.mjs';
 import { CriminalModel } from '../../../src/models/criminal.mjs';
 import { CriminalAttachmentModel } from '../../../src/models/criminalattachment.mjs';
 
-describe('decode', function () {
+describe('ModelService', function () {
     let service: ModelService;
 
     before(async function () {
