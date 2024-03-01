@@ -30,6 +30,6 @@ jobs:
         run: docker-compose -f docker-compose-ci.yml up --build --abort-on-container-exit --renew-anon-volumes
 
       - name: Run codecov
-        uses: codecov/codecov-action@54bcd8715eee62d40e33596ef5e8f0f48dbbccab # v4
+        uses: codecov/codecov-action@54bcd8715eee62d40e33596ef5e8f0f48dbbccab # v4.1.0
         with:
           flags: integration-tests
