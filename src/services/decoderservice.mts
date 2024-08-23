@@ -24,13 +24,13 @@ export class DecoderService implements DecoderServiceInterface {
         this.urlPrefix = urlPrefix;
     }
 
-    public decode(items: Readonly<string[]>): Promise<Record<string, DecodedItem>> {
+    public decode(items: readonly string[]): Promise<Record<string, DecodedItem>> {
         const v1OIDs = items.filter((item) => item.startsWith('!1-'));
         const queue = DecoderService.prepareV1Items(v1OIDs, {});
         return this.decodeMyrotvorets(queue[0]);
     }
 
-    protected static prepareV1Items(items: Readonly<string[]>, queue: Readonly<Queue>): Queue {
+    protected static prepareV1Items(items: readonly string[], queue: Readonly<Queue>): Queue {
         return items.reduce<Queue>((accumulator, item) => {
             const parts = item
                 .substring(1)
