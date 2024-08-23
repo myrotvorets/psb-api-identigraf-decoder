@@ -7,5 +7,5 @@ export interface DecodedItem {
 }
 
 export interface DecoderServiceInterface {
-    decode(items: Readonly<string[]>): Promise<Record<string, DecodedItem>>;
+    decode(items: readonly string[]): Promise<Record<string, DecodedItem>>;
 }

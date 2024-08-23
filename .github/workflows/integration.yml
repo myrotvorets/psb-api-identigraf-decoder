@@ -27,7 +27,7 @@ jobs:
         run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > .npmrc.local
 
       - name: Run tests
-        run: docker-compose -f docker-compose-ci.yml up --build --abort-on-container-exit --renew-anon-volumes
+        run: docker compose -f docker-compose-ci.yml up --build --abort-on-container-exit --renew-anon-volumes
 
       - name: Run codecov
         uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
