@@ -55,7 +55,7 @@
     "chai-as-promised": "npm:@rvagg/chai-as-promised@^8.0.2",
     "eslint-formatter-gha": "^1.5.0",
     "eslint-plugin-mocha": "^10.5.0",
-    "mocha": "^10.7.0",
+    "mocha": "^10.7.3",
     "mocha-multi": "^1.1.7",
     "mocha-reporter-gha": "^1.1.1",
     "mocha-reporter-sonarqube": "^2.0.6",
@@ -64,7 +64,7 @@
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
-    "wait-on": "^7.2.0"
+    "wait-on": "^8.0.0"
   },
   "repository": {
     "type": "git",
