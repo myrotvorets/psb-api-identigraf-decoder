@@ -90,6 +90,7 @@ describe('DecoderService', function () {
                 expect(step).to.be.lessThanOrEqual(6);
                 if (step > 2 && step < 6) {
                     expect(query.method).to.equal('select');
+                    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                     expect(query.transacting).to.be.true;
                 }
 
