@@ -35,6 +35,7 @@ export class DecoderService implements DecoderServiceInterface {
             const parts = item
                 .substring(1)
                 .split('-')
+                // eslint-disable-next-line sonarjs/concise-regex
                 .map((x) => (/^(0|[1-9][0-9]{0,14})$/u.test(x) ? parseInt(x, 10) : NaN)) // NOSONAR
                 .filter((x) => !isNaN(x));
 

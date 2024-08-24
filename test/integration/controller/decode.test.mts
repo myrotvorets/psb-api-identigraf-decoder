@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/assertions-in-tests */
 import { type Express } from 'express';
 import request from 'supertest';
 import { configureApp, createApp } from '../../../src/server.mjs';
