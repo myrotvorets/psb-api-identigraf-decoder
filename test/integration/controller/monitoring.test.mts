@@ -1,4 +1,5 @@
 /* eslint-disable sonarjs/assertions-in-tests */
+import type { RequestListener } from 'node:http';
 import { type Express } from 'express';
 import request from 'supertest';
 import { configureApp, createApp } from '../../../src/server.mjs';
@@ -21,7 +22,10 @@ describe('MonitoringController (integration)', function () {
         return container.dispose();
     });
 
-    const checker200 = (endpoint: string): Promise<unknown> => request(app).get(`/monitoring/${endpoint}`).expect(200);
+    const checker200 = (endpoint: string): Promise<unknown> =>
+        request(app as RequestListener)
+            .get(`/monitoring/${endpoint}`)
+            .expect(200);
 
     it('Liveness Check should succeed', function () {
         return checker200('live');

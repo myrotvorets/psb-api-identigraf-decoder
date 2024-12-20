@@ -1,4 +1,5 @@
 /* eslint-disable sonarjs/assertions-in-tests */
+import type { RequestListener } from 'node:http';
 import { type Express } from 'express';
 import request from 'supertest';
 import { configureApp, createApp } from '../../../src/server.mjs';
@@ -25,7 +26,7 @@ describe('DecodeController (integration)', function () {
     // eslint-disable-next-line mocha/no-setup-in-describe
     e2eData.forEach(({ request: input, response: expected, code }) => {
         it(`should return the expected result (${JSON.stringify(input)})`, function () {
-            return request(app)
+            return request(app as RequestListener)
                 .post('/decode')
                 .set('Content-Type', 'application/json')
                 .send(input)
