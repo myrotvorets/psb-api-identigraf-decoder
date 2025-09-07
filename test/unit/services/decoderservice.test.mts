@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import mockKnex from 'mock-knex';
 import { asClass } from 'awilix';
 import { container, initializeContainer } from '../../../src/lib/container.mjs';
-import { DecoderServiceInterface } from '../../../src/services/decoderserviceinterface.mjs';
+import { type DecoderServiceInterface } from '../../../src/services/decoderserviceinterface.mjs';
 import { DecoderService, type Queue, type QueueItem } from '../../../src/services/decoderservice.mjs';
 import { decodeMyrotvoretsResult } from '../../fixtures/results.mjs';
 import { decodeMyrotvoretsQueryHandler } from '../../helpers.mjs';
